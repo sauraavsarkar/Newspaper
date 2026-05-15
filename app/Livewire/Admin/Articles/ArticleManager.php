@@ -25,6 +25,7 @@ class ArticleManager extends Component
     public $category_id = '';
     public $status = 'draft';
     public $is_featured = false;
+    public $is_breaking = false;
     public $featured_image;
     public $selectedTags = [];
     public $published_at; // For scheduling
@@ -55,7 +56,7 @@ class ArticleManager extends Component
     public function create()
     {
         Log::info('ArticleManager: Opening create modal.');
-        $this->reset(['title', 'slug', 'content', 'excerpt', 'category_id', 'status', 'is_featured', 'featured_image', 'selectedTags', 'editingArticleId', 'remark', 'published_at']);
+        $this->reset(['title', 'slug', 'content', 'excerpt', 'category_id', 'status', 'is_featured', 'is_breaking', 'featured_image', 'selectedTags', 'editingArticleId', 'remark', 'published_at']);
         $this->isModalOpen = true;
     }
 
@@ -71,6 +72,7 @@ class ArticleManager extends Component
         $this->category_id = $article->category_id;
         $this->status = $article->status;
         $this->is_featured = $article->is_featured;
+        $this->is_breaking = $article->is_breaking;
         $this->published_at = $article->published_at ? $article->published_at->format('Y-m-d\TH:i') : '';
         $this->selectedTags = $article->tags->pluck('id')->toArray();
         $this->remark = '';
@@ -99,6 +101,7 @@ class ArticleManager extends Component
             'excerpt' => $this->excerpt,
             'status' => $this->status,
             'is_featured' => $this->is_featured,
+            'is_breaking' => $this->is_breaking,
         ];
 
         if (!$this->editingArticleId) {

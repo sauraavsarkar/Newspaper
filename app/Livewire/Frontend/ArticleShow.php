@@ -10,12 +10,24 @@ use Livewire\Attributes\Layout;
 class ArticleShow extends Component
 {
     public $article;
+    public int $viewCount = 0;
 
     public function mount($slug)
     {
         $this->article = Article::where('slug', $slug)
             ->where('status', 'published')
+            ->with(['author', 'category', 'tags'])
             ->firstOrFail();
+
+        // Record the view
+        $this->article->recordView(
+            userId: auth()->id(),
+            ip: request()->ip(),
+            userAgent: request()->userAgent(),
+            referer: request()->header('referer')
+        );
+
+        $this->viewCount = $this->article->total_views;
     }
 
     public function render()

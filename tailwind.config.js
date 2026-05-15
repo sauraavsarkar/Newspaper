@@ -13,8 +13,17 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Outfit', ...defaultTheme.fontFamily.sans],
             },
+            keyframes: {
+                ticker: {
+                    '0%': { transform: 'translateX(100%)' },
+                    '100%': { transform: 'translateX(-100%)' },
+                }
+            },
+            animation: {
+                ticker: 'ticker 30s linear infinite',
+            }
         },
     },
 

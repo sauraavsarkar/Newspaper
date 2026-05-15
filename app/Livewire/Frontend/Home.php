@@ -23,7 +23,17 @@ class Home extends Component
             ->latest('published_at')
             ->first();
 
-        // Fetch trending or latest articles based on search
+        // Fetch breaking news for the ticker
+        $breakingNews = Article::where('status', 'published')
+            ->where('is_breaking', true)
+            ->latest('published_at')
+            ->limit(5)
+            ->get();
+
+        // Fetch trending articles (most viewed in last 7 days)
+        $trendingArticles = Article::trending(7, 5)->get();
+
+        // Fetch latest articles based on search
         $latestArticles = Article::where('status', 'published')
             ->when($this->search, function ($query) {
                 return $query->where(function ($q) {
@@ -40,6 +50,8 @@ class Home extends Component
         return view('livewire.frontend.home', [
             'featuredArticle' => $this->search ? null : $featuredArticle,
             'latestArticles' => $latestArticles,
+            'trendingArticles' => $trendingArticles,
+            'breakingNews' => $breakingNews,
         ]);
     }
 }

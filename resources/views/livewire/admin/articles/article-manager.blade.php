@@ -343,6 +343,17 @@
                                 <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500"></div>
                             </div>
                         </div>
+
+                        <div class="flex items-center justify-between p-6 bg-white/50 dark:bg-zinc-950/50 rounded-3xl border border-zinc-200 dark:border-white/5 shadow-sm">
+                            <div>
+                                <span class="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest block">Breaking News</span>
+                                <span class="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 block">Push to live ticker</span>
+                            </div>
+                            <div class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="is_breaking" class="sr-only peer">
+                                <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600 dark:peer-checked:bg-rose-500"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Taxonomy / Tags -->

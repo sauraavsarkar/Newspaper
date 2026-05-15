@@ -57,9 +57,14 @@
                     Breaking
                 </span>
                 <div class="overflow-hidden flex-1 relative h-5">
-                    <div class="absolute inset-0 flex items-center animate-ticker whitespace-nowrap text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                        {{-- We will fetch breaking news in Livewire or via a view composer --}}
-                        Welcome to Chronicle OS. The next generation editorial engine is now live. Stay tuned for updates.
+                    <div class="absolute inset-0 flex items-center animate-ticker whitespace-nowrap text-sm font-medium text-zinc-800 dark:text-zinc-200 gap-12">
+                        @forelse($globalBreakingNews as $article)
+                            <a href="{{ route('article.show', $article->slug) }}" class="hover:text-indigo-500 transition-colors">
+                                {{ $article->title }}
+                            </a>
+                        @empty
+                            <span>Welcome to Chronicle OS. The next generation editorial engine is now live. Stay tuned for updates.</span>
+                        @endforelse
                     </div>
                 </div>
             </div>
