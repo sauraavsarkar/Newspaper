@@ -58,9 +58,45 @@
                     </div>
 
                     <!-- User Menu Toggle (Triggered in Navigation) -->
-                    <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-indigo-500/20">
-                        <div class="h-full w-full rounded-full bg-white dark:bg-zinc-950 flex items-center justify-center">
-                            <span class="text-xs font-bold text-indigo-600 dark:text-white">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
+                    <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
+                        <button @click="open = ! open" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-zinc-300 dark:focus:border-zinc-700 transition">
+                            <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-shadow">
+                                <div class="h-full w-full rounded-full bg-white dark:bg-zinc-950 flex items-center justify-center">
+                                    <span class="text-xs font-bold text-indigo-600 dark:text-white">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
+                                </div>
+                            </div>
+                        </button>
+
+                        <!-- User Profile & Logout -->
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-48 rounded-xl shadow-lg shadow-black/10 dark:shadow-indigo-500/10 bg-white dark:bg-zinc-900 ring-1 ring-black ring-opacity-5 dark:ring-white/10 z-50 overflow-hidden"
+                             style="display: none;">
+                            
+                            <div class="px-4 py-3 border-b border-zinc-100 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900/50">
+                                <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                            </div>
+
+                            <div class="py-1">
+                                <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    Profile
+                                </a>
+                                
+                                <form method="POST" action="{{ route('logout') }}" x-data>
+                                    @csrf
+                                    <button type="submit" @click.prevent="$root.submit();" class="block w-full text-left px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-zinc-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                        Log Out
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
