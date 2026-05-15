@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Geist:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fcf8fa",
+                        "inverse-primary": "#bec6e0",
+                        "surface-variant": "#e4e2e4",
+                        "on-tertiary-container": "#98805d",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#00174b",
+                        "on-tertiary-fixed": "#271901",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "inverse-surface": "#303032",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary-container": "#271901",
+                        "surface-container": "#f0edef",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0f2",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "primary": "#000000",
+                        "surface-tint": "#565e74",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary": "#0051d5",
+                        "on-surface-variant": "#45464d",
+                        "on-surface": "#1b1b1d",
+                        "secondary-container": "#316bf3",
+                        "tertiary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-secondary-container": "#fefcff",
+                        "outline": "#76777d",
+                        "error": "#ba1a1a",
+                        "background": "#fcf8fa",
+                        "surface-dim": "#dcd9db",
+                        "surface": "#fcf8fa",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-high": "#eae7e9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-container": "#131b2e",
+                        "tertiary-fixed": "#fcdeb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-sm": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary-fixed">
+<!-- Side Navigation Shell -->
+<aside class="fixed h-full w-sidebar-width left-0 top-0 bg-surface-bright border-r border-outline-variant flex flex-col h-full py-lg px-md z-50">
+<div class="mb-xl px-xs">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Chronicle OS</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Global Newsroom</p>
+</div>
+<nav class="flex-1 space-y-base">
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="font-body-md text-body-md">Editorial</span>
+</a>
+<a class="flex items-center gap-sm text-secondary font-bold border-l-4 border-secondary bg-secondary-fixed p-2 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-md text-body-md">Business Intelligence</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-body-md text-body-md">Ad Management</span>
+</a>
+</nav>
+<button class="mt-lg w-full py-sm bg-primary text-on-primary font-body-md font-bold hover:opacity-90 transition-opacity">
+            New Article
+        </button>
+<footer class="mt-auto space-y-base pt-lg border-t border-outline-variant">
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-body-md text-body-md">Workspace Switcher</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body-md text-body-md">User Profile</span>
+</a>
+</footer>
+</aside>
+<!-- Top Navigation Shell -->
+<header class="flex items-center justify-between w-full h-16 px-lg ml-sidebar-width sticky top-0 bg-surface border-b border-outline-variant z-40">
+<div class="flex items-center gap-lg">
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-outline">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant text-body-sm w-64 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none" placeholder="Search data..." type="text"/>
+</div>
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant font-body-sm hover:text-secondary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-body-sm hover:text-secondary transition-colors" href="#">Editorial</a>
+<a class="text-on-surface-variant font-body-sm hover:text-secondary transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs border-r border-outline-variant pr-md">
+<span class="material-symbols-outlined text-outline hover:text-secondary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-outline hover:text-secondary cursor-pointer">sensors</span>
+<span class="material-symbols-outlined text-outline hover:text-secondary cursor-pointer">settings</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="px-md py-1.5 border border-secondary text-secondary font-body-sm hover:bg-secondary-fixed transition-colors">Backlog</button>
+<button class="px-md py-1.5 bg-secondary text-on-secondary font-body-sm font-semibold hover:opacity-90 active:scale-95 transition-all">Quick Create</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width p-lg space-y-lg max-w-[1600px]">
+<!-- Page Header -->
+<div class="flex items-end justify-between">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Business Intelligence</h2>
+<p class="text-on-surface-variant">Real-time revenue attribution and inventory performance.</p>
+</div>
+<div class="flex gap-xs bg-surface-container-high p-1 rounded-lg">
+<button class="px-md py-1 bg-surface-bright shadow-sm text-label-caps">LAST 24H</button>
+<button class="px-md py-1 text-on-surface-variant text-label-caps hover:text-primary">WEEKLY</button>
+<button class="px-md py-1 text-on-surface-variant text-label-caps hover:text-primary">MONTHLY</button>
+</div>
+</div>
+<!-- Revenue Summary Row -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-md">
+<!-- Total Revenue Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start">
+<span class="text-label-caps text-on-surface-variant uppercase">Total Gross Revenue</span>
+<span class="text-success text-data-mono flex items-center text-secondary"><span class="material-symbols-outlined text-[14px]">trending_up</span> 12.4%</span>
+</div>
+<div class="mt-sm">
+<span class="font-headline-lg text-display-lg">$428,902.50</span>
+</div>
+<div class="mt-md h-1 bg-surface-container-high w-full">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+<div class="mt-xs flex justify-between text-data-mono text-on-surface-variant opacity-60">
+<span>Target: $500k</span>
+<span>85%</span>
+</div>
+</div>
+<!-- Ad Revenue Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]">
+<span class="text-label-caps text-on-surface-variant uppercase">Programmatic Ads</span>
+<div class="mt-sm flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg">$194,203</span>
+<span class="text-data-mono text-on-surface-variant">RPM $8.42</span>
+</div>
+<div class="mt-md flex items-end gap-1 h-8">
+<div class="w-full bg-secondary-fixed h-[40%]"></div>
+<div class="w-full bg-secondary-fixed h-[60%]"></div>
+<div class="w-full bg-secondary-fixed h-[30%]"></div>
+<div class="w-full bg-secondary-fixed h-[80%]"></div>
+<div class="w-full bg-secondary-fixed h-[55%]"></div>
+<div class="w-full bg-secondary-fixed h-[90%]"></div>
+<div class="w-full bg-secondary-fixed h-[45%]"></div>
+</div>
+</div>
+<!-- Sponsored Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]">
+<span class="text-label-caps text-on-surface-variant uppercase">Sponsored Content</span>
+<div class="mt-sm flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg">$156,300</span>
+<span class="text-data-mono text-on-surface-variant">14 Campaigns</span>
+</div>
+<div class="mt-md h-1 bg-surface-container-high w-full">
+<div class="h-full bg-on-tertiary-container w-[92%]"></div>
+</div>
+<div class="mt-xs text-data-mono text-on-surface-variant">Capacity: 92% filled</div>
+</div>
+<!-- Affiliate Card -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)]">
+<span class="text-label-caps text-on-surface-variant uppercase">Affiliate Income</span>
+<div class="mt-sm flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg">$78,399</span>
+<span class="text-data-mono text-on-surface-variant">3.2k Sales</span>
+</div>
+<div class="mt-md flex justify-between gap-1 h-8 items-center">
+<span class="material-symbols-outlined text-outline">shopping_cart</span>
+<span class="text-label-caps text-secondary font-bold">Top: Amazon Tech</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-lg">
+<!-- Ad Performance Grid (Generic Website Layout) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm">Inventory Performance Map</h3>
+<div class="flex gap-md items-center">
+<div class="flex items-center gap-xs text-body-sm text-on-surface-variant">
+<span class="w-3 h-3 bg-secondary"></span> High CTR
+                        </div>
+<div class="flex items-center gap-xs text-body-sm text-on-surface-variant">
+<span class="w-3 h-3 bg-secondary-fixed"></span> Low CTR
+                        </div>
+</div>
+</div>
+<div class="p-lg bg-surface-container-low flex-1">
+<div class="max-w-3xl mx-auto border-2 border-dashed border-outline-variant p-md bg-white space-y-md">
+<!-- Website Header Representation -->
+<div class="h-12 bg-surface-variant flex items-center px-md justify-between border border-outline-variant">
+<div class="w-24 h-4 bg-outline opacity-20"></div>
+<div class="flex gap-sm">
+<div class="w-12 h-2 bg-outline opacity-20"></div>
+<div class="w-12 h-2 bg-outline opacity-20"></div>
+</div>
+</div>
+<!-- Hero Ad Slot -->
+<div class="relative group cursor-help border-2 border-secondary bg-secondary-fixed/20 p-xl flex flex-col items-center justify-center text-center">
+<span class="text-label-caps text-secondary font-black mb-1">HERO BILLBOARD (970x250)</span>
+<div class="grid grid-cols-2 gap-xl">
+<div>
+<p class="text-data-mono text-secondary text-lg">2.14%</p>
+<p class="text-[10px] text-on-surface-variant font-bold">AVG CTR</p>
+</div>
+<div>
+<p class="text-data-mono text-secondary text-lg">$14.20</p>
+<p class="text-[10px] text-on-surface-variant font-bold">AVG RPM</p>
+</div>
+</div>
+<div class="absolute top-2 right-2 flex gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="flex gap-md">
+<!-- In-Article Simulation -->
+<div class="flex-1 space-y-sm">
+<div class="h-4 bg-surface-variant w-full"></div>
+<div class="h-4 bg-surface-variant w-5/6"></div>
+<div class="relative border-2 border-secondary bg-secondary-fixed/10 p-lg text-center">
+<span class="text-label-caps text-secondary">IN-ARTICLE (MID-SCROLL)</span>
+<div class="flex justify-around mt-sm">
+<span class="text-data-mono font-bold">1.45% CTR</span>
+<span class="text-data-mono font-bold">$6.10 RPM</span>
+</div>
+</div>
+<div class="h-4 bg-surface-variant w-full"></div>
+<div class="h-4 bg-surface-variant w-3/4"></div>
+</div>
+<!-- Sidebar Ad Slot -->
+<div class="w-48 border-2 border-outline-variant bg-surface-container-high/50 p-md flex flex-col items-center justify-start text-center">
+<span class="text-label-caps text-on-surface-variant opacity-60 mb-sm">SIDEBAR (300x600)</span>
+<div class="w-full space-y-md">
+<div class="p-xs bg-white border border-outline-variant">
+<p class="text-data-mono text-on-surface-variant">0.82%</p>
+<p class="text-[8px] uppercase">CTR</p>
+</div>
+<div class="p-xs bg-white border border-outline-variant">
+<p class="text-data-mono text-on-surface-variant">$3.45</p>
+<p class="text-[8px] uppercase">RPM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Ad Slot -->
+<div class="border-2 border-outline-variant bg-surface-container-high p-sm text-center">
+<span class="text-label-caps text-on-surface-variant opacity-40">STICKY FOOTER (728x90) - 0.31% CTR</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Revenue by Category (Treemap Style) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-lg">
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm p-md flex-1">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-sm text-headline-sm">Revenue by Content</h3>
+<span class="material-symbols-outlined text-outline">pie_chart</span>
+</div>
+<div class="space-y-sm">
+<!-- Category Block 1 -->
+<div class="group cursor-pointer">
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-bold">Finance &amp; Markets</span>
+<span class="text-data-mono">$142,000</span>
+</div>
+<div class="h-10 bg-secondary flex items-center px-sm transition-all group-hover:opacity-90">
+<span class="text-white text-label-caps">33% SHARE</span>
+</div>
+</div>
+<!-- Category Block 2 -->
+<div class="group cursor-pointer">
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-bold">Technology</span>
+<span class="text-data-mono">$112,000</span>
+</div>
+<div class="h-8 bg-secondary-fixed flex items-center px-sm transition-all group-hover:bg-secondary-fixed-dim">
+<span class="text-on-secondary-fixed text-label-caps">26% SHARE</span>
+</div>
+</div>
+<!-- Category Block 3 -->
+<div class="group cursor-pointer">
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-bold">Politics</span>
+<span class="text-data-mono">$86,000</span>
+</div>
+<div class="h-6 bg-surface-container-highest flex items-center px-sm transition-all group-hover:bg-surface-variant">
+<span class="text-on-surface-variant text-label-caps">20% SHARE</span>
+</div>
+</div>
+<!-- Others -->
+<div class="grid grid-cols-2 gap-sm pt-xs">
+<div class="p-sm bg-surface-container-low border border-outline-variant">
+<p class="text-label-caps text-on-surface-variant">Lifestyle</p>
+<p class="text-data-mono font-bold">$54k</p>
+</div>
+<div class="p-sm bg-surface-container-low border border-outline-variant">
+<p class="text-label-caps text-on-surface-variant">Entertainment</p>
+<p class="text-data-mono font-bold">$34k</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Ad Schedule / Upcoming Campaigns -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm p-md">
+<h3 class="font-headline-sm text-headline-sm mb-md">Campaign Roadmap</h3>
+<div class="space-y-md">
+<!-- Campaign Item -->
+<div class="flex items-start gap-sm border-l-2 border-secondary pl-md">
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-body-md">Cyberdyne Systems</p>
+<span class="text-[10px] bg-secondary-fixed px-2 py-0.5 rounded-full text-secondary font-black">A/B ACTIVE</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Full Takeover: Tech Section</p>
+<div class="mt-xs h-1 w-full bg-surface-container-high rounded-full">
+<div class="h-full bg-secondary w-2/3"></div>
+</div>
+</div>
+</div>
+<!-- Campaign Item -->
+<div class="flex items-start gap-sm border-l-2 border-outline-variant pl-md">
+<div class="flex-1 opacity-60">
+<div class="flex justify-between">
+<p class="font-bold text-body-md">Weyland-Yutani Corp</p>
+<span class="text-[10px] bg-surface-container-high px-2 py-0.5 rounded-full text-on-surface-variant">SCHEDULED</span>
+</div>
+<p class="text-body-sm">Podcast Sponsorship</p>
+<p class="text-[10px] text-outline mt-1 italic">Starts in 3 days</p>
+</div>
+</div>
+<!-- Campaign Item -->
+<div class="flex items-start gap-sm border-l-2 border-tertiary-fixed pl-md">
+<div class="flex-1">
+<div class="flex justify-between">
+<p class="font-bold text-body-md">Initech Software</p>
+<span class="text-[10px] bg-tertiary-fixed px-2 py-0.5 rounded-full text-on-tertiary-fixed font-black">TESTING B</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Affiliate Widget v2.0</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-lg text-secondary font-bold text-body-sm hover:underline">View Ad Calendar</button>
+</div>
+</div>
+</div>
+<!-- Analytical Details Table -->
+<div class="bg-surface-container-lowest border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-headline-sm text-headline-sm">Yield Optimization Log</h3>
+<button class="flex items-center gap-xs text-body-sm text-outline hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">download</span> Export CSV
+                </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="p-md text-label-caps text-on-surface-variant">Slot ID</th>
+<th class="p-md text-label-caps text-on-surface-variant">Placement</th>
+<th class="p-md text-label-caps text-on-surface-variant">Impressions</th>
+<th class="p-md text-label-caps text-on-surface-variant">CTR</th>
+<th class="p-md text-label-caps text-on-surface-variant">Fill Rate</th>
+<th class="p-md text-label-caps text-on-surface-variant">RPM Status</th>
+<th class="p-md text-label-caps text-on-surface-variant">Trend</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest">
+<td class="p-md font-data-mono text-on-surface">INV-H-001</td>
+<td class="p-md font-bold text-body-sm">Global Header Billboard</td>
+<td class="p-md font-data-mono">1.2M</td>
+<td class="p-md font-data-mono">2.14%</td>
+<td class="p-md font-data-mono">99.8%</td>
+<td class="p-md">
+<span class="px-2 py-0.5 bg-secondary-fixed text-secondary font-bold text-[10px]">STABLE</span>
+</td>
+<td class="p-md">
+<div class="flex gap-0.5 items-end h-4">
+<div class="w-1 h-[20%] bg-secondary"></div>
+<div class="w-1 h-[40%] bg-secondary"></div>
+<div class="w-1 h-[60%] bg-secondary"></div>
+<div class="w-1 h-[80%] bg-secondary"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest">
+<td class="p-md font-data-mono text-on-surface">INV-A-402</td>
+<td class="p-md font-bold text-body-sm">Mid-Article Injection</td>
+<td class="p-md font-data-mono">840k</td>
+<td class="p-md font-data-mono">1.45%</td>
+<td class="p-md font-data-mono">94.2%</td>
+<td class="p-md">
+<span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed font-bold text-[10px]">UNDERPERFORMING</span>
+</td>
+<td class="p-md">
+<div class="flex gap-0.5 items-end h-4">
+<div class="w-1 h-[80%] bg-error"></div>
+<div class="w-1 h-[60%] bg-error"></div>
+<div class="w-1 h-[40%] bg-error"></div>
+<div class="w-1 h-[20%] bg-error"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest">
+<td class="p-md font-data-mono text-on-surface">INV-S-012</td>
+<td class="p-md font-bold text-body-sm">Sidebar Sticky (Right)</td>
+<td class="p-md font-data-mono">4.5M</td>
+<td class="p-md font-data-mono">0.82%</td>
+<td class="p-md font-data-mono">100%</td>
+<td class="p-md">
+<span class="px-2 py-0.5 bg-secondary-fixed text-secondary font-bold text-[10px]">OPTIONAL</span>
+</td>
+<td class="p-md">
+<div class="flex gap-0.5 items-end h-4">
+<div class="w-1 h-[50%] bg-outline"></div>
+<div class="w-1 h-[55%] bg-outline"></div>
+<div class="w-1 h-[52%] bg-outline"></div>
+<div class="w-1 h-[54%] bg-outline"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only for main BI dashboard) -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[28px]">add_chart</span>
+</button>
+</body></html>

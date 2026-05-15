@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newspaper CMS — Project Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Libre+Franklin:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --newsprint: #e8e0cc;
+    --red: #c0392b;
+    --gold: #b8960c;
+    --muted: #6b6455;
+    --rule: #2c2c2c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Libre Franklin', sans-serif;
+    font-weight: 300;
+    background-image:
+      repeating-linear-gradient(
+        transparent,
+        transparent 27px,
+        rgba(0,0,0,0.04) 27px,
+        rgba(0,0,0,0.04) 28px
+      );
+  }
+
+  /* ── MASTHEAD ── */
+  header {
+    border-bottom: 4px double var(--ink);
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+    position: relative;
+    background: var(--paper);
+  }
+  .dateline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: .12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: .6rem;
+  }
+  h1.masthead {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .sub-masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: .18em;
+    color: var(--muted);
+    margin-top: .5rem;
+    text-transform: uppercase;
+  }
+  .breaking-tag {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: .15em;
+    padding: .2rem .6rem;
+    margin-top: .8rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: .6; }
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  section { margin-bottom: 2.5rem; }
+
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin-bottom: 1.4rem;
+  }
+  .section-rule h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .section-rule::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--ink);
+  }
+
+  /* ── STEP GRID ── */
+  .step-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--rule);
+    background: var(--rule);
+  }
+  .step-card {
+    background: var(--paper);
+    padding: 1.4rem 1.2rem;
+    transition: background .15s;
+    cursor: default;
+  }
+  .step-card:hover { background: #ede7d5; }
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--newsprint);
+    user-select: none;
+  }
+  .step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: .3rem 0 .6rem;
+  }
+  .step-body {
+    font-size: .8rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  .step-tag {
+    display: inline-block;
+    margin-top: .7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .1em;
+    padding: .15rem .5rem;
+    border: 1px solid currentColor;
+    text-transform: uppercase;
+  }
+  .tag-day1 { color: var(--red); }
+  .tag-day2 { color: #1a6b3c; }
+  .tag-polish { color: var(--gold); }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 2.2rem;
+    border-left: 2px solid var(--ink);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px dashed var(--newsprint);
+  }
+  .tl-item:last-child { border-bottom: none; margin-bottom: 0; }
+  .tl-dot {
+    position: absolute;
+    left: -2.65rem;
+    top: .3rem;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--paper);
+    outline: 2px solid var(--ink);
+  }
+  .tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .1em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: .3rem;
+  }
+  .tl-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: .4rem;
+  }
+  .tl-tasks {
+    list-style: none;
+    font-size: .8rem;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .tl-tasks li::before {
+    content: '→ ';
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink);
+    font-size: .7rem;
+  }
+
+  /* ── COMMAND BOX ── */
+  .cmd-block {
+    background: var(--rule);
+    color: #e8e0cc;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    padding: 1.2rem 1.4rem;
+    line-height: 2;
+    overflow-x: auto;
+    border-left: 3px solid var(--red);
+  }
+  .cmd-block .comment { color: #888; }
+  .cmd-block .cmd { color: #c8e6c9; }
+
+  /* ── STACK TABLE ── */
+  .stack-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .8rem;
+  }
+  .stack-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: .6rem .8rem;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .stack-table td {
+    padding: .7rem .8rem;
+    border-bottom: 1px solid var(--newsprint);
+    vertical-align: top;
+  }
+  .stack-table tr:hover td { background: #ede7d5; }
+  .stack-table .layer {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: .9rem;
+  }
+  .stack-table .tools {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem;
+    color: var(--red);
+  }
+
+  /* ── MVP CHECKLIST ── */
+  .checklist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: .5rem;
+  }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    font-size: .8rem;
+    line-height: 1.5;
+    padding: .6rem .8rem;
+    background: #ede7d5;
+    border-left: 3px solid transparent;
+    transition: border-color .15s;
+  }
+  .check-item:hover { border-left-color: var(--ink); }
+  .check-box {
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--ink);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    position: relative;
+    transition: background .1s;
+  }
+  .check-box.done { background: var(--ink); }
+  .check-box.done::after {
+    content: '✓';
+    position: absolute;
+    color: var(--paper);
+    font-size: 9px;
+    top: -1px; left: 1px;
+  }
+  .check-label { cursor: pointer; user-select: none; }
+
+  /* ── QUOTE PULL ── */
+  .pull-quote {
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 1.2rem 1.5rem;
+    margin: 2rem 0;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--ink);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 4px double var(--ink);
+    text-align: center;
+    padding: 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="dateline">Vol. I, No. 1 &nbsp;·&nbsp; Friday, May 15 2026 &nbsp;·&nbsp; Developer Edition</div>
+  <h1 class="masthead">The Newspaper CMS</h1>
+  <div class="sub-masthead">Project Kickstart Roadmap &nbsp;·&nbsp; 28-Hour MVP Blueprint</div>
+  <span class="breaking-tag">● Breaking: Your Best CV Project Starts Now</span>
+</header>
+
+<main>
+
+  <!-- PULL QUOTE -->
+  <div class="pull-quote">
+    "Don't plan it forever — scaffold it in 10 minutes and let the code lead."
+  </div>
+
+  <!-- PHASE STEPS -->
+  <section>
+    <div class="section-rule"><h2>The 3-Phase Attack Plan</h2></div>
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Scaffold & Auth</div>
+        <div class="step-body">Run Laravel installer, configure MySQL, add Spatie roles. Get login + register + email verify working first. Everything else depends on this.</div>
+        <span class="step-tag tag-day1">Day 1 · Hours 1–4</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Core Article CRUD</div>
+        <div class="step-body">Articles model with categories, tags, slug, status (draft/published/scheduled). CKEditor in the form. Livewire table for listing. Policies to guard roles.</div>
+        <span class="step-tag tag-day1">Day 1 · Hours 5–10</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Editorial Workflow</div>
+        <div class="step-body">Status machine: draft → pending_review → approved → published. Rejection notes. Activity log. This is what makes interviewers lean forward.</div>
+        <span class="step-tag tag-day1">Day 1 · Hours 11–14</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-title">Breaking News & Real-Time</div>
+        <div class="step-body">Laravel Broadcasting + Pusher. Breaking news flag on article. Live ticker on front-end via Alpine.js Echo listener. Works without WebSockets using polling fallback.</div>
+        <span class="step-tag tag-day2">Day 2 · Hours 1–5</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">05</div>
+        <div class="step-title">Analytics Dashboard</div>
+        <div class="step-body">article_views table with IP + timestamp. Trending score = views + comments weighted by time decay. Chart.js graphs for views-per-day and top categories.</div>
+        <span class="step-tag tag-day2">Day 2 · Hours 6–10</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">06</div>
+        <div class="step-title">Polish & Ship</div>
+        <div class="step-body">Responsive Tailwind layout, seed 50 fake articles (Faker), write README with ER diagram + demo creds, push to GitHub, deploy to Railway or Render.</div>
+        <span class="step-tag tag-polish">Final 4 Hours</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIRST COMMANDS -->
+  <section>
+    <div class="section-rule"><h2>Your First Terminal Session (Do This Now)</h2></div>
+    <div class="cmd-block">
+<span class="comment"># 1. Create the project</span>
+<span class="cmd">composer create-project laravel/laravel newspaper-cms</span>
+<span class="cmd">cd newspaper-cms</span>
+
+<span class="comment"># 2. Install core packages</span>
+<span class="cmd">composer require spatie/laravel-permission</span>
+<span class="cmd">composer require livewire/livewire</span>
+
+<span class="comment"># 3. Publish + migrate</span>
+<span class="cmd">php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"</span>
+<span class="cmd">php artisan migrate</span>
+
+<span class="comment"># 4. Install front-end</span>
+<span class="cmd">npm install -D tailwindcss @tailwindcss/typography alpinejs</span>
+<span class="cmd">npx tailwindcss init</span>
+
+<span class="comment"># 5. Make your first models</span>
+<span class="cmd">php artisan make:model Article -mfsc</span>
+<span class="cmd">php artisan make:model Category -mf</span>
+<span class="cmd">php artisan make:model ArticleView -m</span>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section>
+    <div class="section-rule"><h2>Tech Stack at a Glance</h2></div>
+    <table class="stack-table">
+      <thead>
+        <tr><th>Layer</th><th>Tools</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="layer">Auth & Roles</td>
+          <td class="tools">Laravel Breeze · Spatie Permission</td>
+          <td>Fastest gate/policy setup; roles stored in DB</td>
+        </tr>
+        <tr>
+          <td class="layer">Frontend</td>
+          <td class="tools">Livewire 3 · Alpine.js · Tailwind CSS</td>
+          <td>Full reactivity without writing an API; Alpine handles small interactions</td>
+        </tr>
+        <tr>
+          <td class="layer">Rich Text</td>
+          <td class="tools">CKEditor 5 (CDN)</td>
+          <td>Paste from Word, image upload, clean HTML output</td>
+        </tr>
+        <tr>
+          <td class="layer">Real-Time</td>
+          <td class="tools">Pusher · Laravel Echo</td>
+          <td>Free tier is enough for demos; fallback to polling</td>
+        </tr>
+        <tr>
+          <td class="layer">Media</td>
+          <td class="tools">Spatie Media Library · local disk / S3</td>
+          <td>Auto thumbnails, conversions, responsive images</td>
+        </tr>
+        <tr>
+          <td class="layer">Analytics</td>
+          <td class="tools">Chart.js · custom SQL queries</td>
+          <td>No external service needed; raw queries are fast enough for a portfolio</td>
+        </tr>
+        <tr>
+          <td class="layer">Deployment</td>
+          <td class="tools">Railway.app or Laravel Forge + DigitalOcean</td>
+          <td>Railway is free-ish and zero-config; Forge looks better on CV</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 28-HOUR TIMELINE -->
+  <section>
+    <div class="section-rule"><h2>28-Hour Detailed Timeline</h2></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 0–2</div>
+        <div class="tl-title">Environment & Scaffold</div>
+        <ul class="tl-tasks">
+          <li>Laravel install + .env (MySQL creds, mail, Pusher)</li>
+          <li>Breeze for auth scaffolding (email verify included)</li>
+          <li>Spatie Permission: seed 5 roles (Admin, Editor, Journalist, Moderator, Reader)</li>
+          <li>Tailwind config + layout blade template</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 2–8</div>
+        <div class="tl-title">Articles Core</div>
+        <ul class="tl-tasks">
+          <li>Migration: articles (title, slug, body, status, scheduled_at, breaking, seo_title, seo_desc)</li>
+          <li>Category + Tag models with pivot</li>
+          <li>Livewire ArticleForm component (CKEditor integration)</li>
+          <li>ArticlePolicy: journalists create/edit own; editors approve; admins all</li>
+          <li>Auto-slug on title save</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 8–14</div>
+        <div class="tl-title">Dashboards + Workflow</div>
+        <ul class="tl-tasks">
+          <li>Journalist panel: my articles list, status badges, submit for review button</li>
+          <li>Editor panel: pending approvals queue, approve/reject with note</li>
+          <li>Activity log (Spatie Activity Log package)</li>
+          <li>Scheduled publish: Laravel scheduler checks articles each minute</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 14–18</div>
+        <div class="tl-title">Breaking News + Real-Time</div>
+        <ul class="tl-tasks">
+          <li>BreakingNewsUpdated event + broadcast on save</li>
+          <li>Alpine.js + Echo: ticker updates without page reload</li>
+          <li>Breaking news banner on public site</li>
+          <li>Auto-refresh headlines every 60s (polling fallback)</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 18–22</div>
+        <div class="tl-title">Analytics + Comments</div>
+        <ul class="tl-tasks">
+          <li>ArticleView recorded on each public page load (deduplicated by IP+hour)</li>
+          <li>Trending score: views×1 + comments×3, decayed by article age</li>
+          <li>Chart.js: daily views line chart, top-5 categories bar chart</li>
+          <li>Comment system with moderation queue</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-time">Hours 22–28</div>
+        <div class="tl-title">Polish, Seed & Deploy</div>
+        <ul class="tl-tasks">
+          <li>DatabaseSeeder: 50 articles, 5 categories, 3 journalists, 1 editor, 1 admin</li>
+          <li>Public home: hero, trending sidebar, category blocks</li>
+          <li>Mobile-responsive nav + article layout</li>
+          <li>README: ER diagram (dbdiagram.io), screenshots, demo creds</li>
+          <li>Push to GitHub + deploy Railway</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MVP CHECKLIST -->
+  <section>
+    <div class="section-rule"><h2>Interactive MVP Checklist</h2></div>
+    <div class="checklist" id="checklist">
+      <!-- items injected by JS -->
+    </div>
+  </section>
+
+  <!-- PRO TIPS -->
+  <section>
+    <div class="section-rule"><h2>Speed Tips That Save Hours</h2></div>
+    <div class="step-grid">
+      <div class="step-card">
+        <div class="step-title">Use make:model -mfsc</div>
+        <div class="step-body">One command generates the Model, Migration, Factory, Seeder, and Controller together. Never generate them separately.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-title">Skip building a REST API</div>
+        <div class="step-body">Livewire replaces the need for a separate API for your own frontend. Only build REST if you plan to show a mobile app too.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-title">Seed aggressively early</div>
+        <div class="step-body">Run <code>php artisan db:seed</code> after every major migration. You need realistic data to see if your dashboards look good.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-title">Use Spatie packages</div>
+        <div class="step-body">Permission, MediaLibrary, ActivityLog — all production-grade, all on your CV. Beats reinventing the wheel in 28 hours.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Newspaper CMS Blueprint &nbsp;·&nbsp; Generated May 2026 &nbsp;·&nbsp; Build Fast · Ship Real
+</footer>
+
+<script>
+const items = [
+  "Laravel installed & .env configured",
+  "MySQL database created",
+  "Breeze auth scaffolded",
+  "Spatie Permission installed",
+  "Roles seeded (Admin/Editor/Journalist)",
+  "Article migration created",
+  "Category & Tag models",
+  "Livewire ArticleForm component",
+  "CKEditor integrated",
+  "ArticlePolicy written",
+  "Auto-slug generation",
+  "Draft/Pending/Published status machine",
+  "Journalist dashboard",
+  "Editor approval queue",
+  "Activity log working",
+  "Scheduled publish (artisan schedule)",
+  "Breaking news flag on articles",
+  "Pusher / Laravel Echo setup",
+  "Live ticker on front-end",
+  "ArticleView tracking",
+  "Trending algorithm",
+  "Analytics charts (Chart.js)",
+  "Comment system",
+  "Comment moderation panel",
+  "Public homepage built",
+  "Category page",
+  "Article detail page",
+  "Search & filter",
+  "Mobile responsive",
+  "DatabaseSeeder with 50 articles",
+  "GitHub repo + README",
+  "ER diagram in README",
+  "Deployed to Railway/Render",
+];
+
+const saved = JSON.parse(localStorage.getItem('cms-checklist') || '{}');
+const container = document.getElementById('checklist');
+
+items.forEach((label, i) => {
+  const key = 'item-' + i;
+  const done = saved[key] || false;
+
+  const div = document.createElement('div');
+  div.className = 'check-item';
+
+  const box = document.createElement('div');
+  box.className = 'check-box' + (done ? ' done' : '');
+
+  const lbl = document.createElement('span');
+  lbl.className = 'check-label';
+  lbl.textContent = label;
+
+  const toggle = () => {
+    box.classList.toggle('done');
+    saved[key] = box.classList.contains('done');
+    localStorage.setItem('cms-checklist', JSON.stringify(saved));
+  };
+
+  box.addEventListener('click', toggle);
+  lbl.addEventListener('click', toggle);
+
+  div.appendChild(box);
+  div.appendChild(lbl);
+  container.appendChild(div);
+});
+</script>
+</body>
+</html>

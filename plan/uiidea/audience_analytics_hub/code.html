@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Audience Analytics Hub | Chronicle OS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Geist:wght@600;700;900&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fcf8fa",
+                        "inverse-primary": "#bec6e0",
+                        "surface-variant": "#e4e2e4",
+                        "on-tertiary-container": "#98805d",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#00174b",
+                        "on-tertiary-fixed": "#271901",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "inverse-surface": "#303032",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary-container": "#271901",
+                        "surface-container": "#f0edef",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0f2",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "primary": "#000000",
+                        "surface-tint": "#565e74",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary": "#0051d5",
+                        "on-surface-variant": "#45464d",
+                        "on-surface": "#1b1b1d",
+                        "secondary-container": "#316bf3",
+                        "tertiary": "#000000",
+                        "outline-variant": "#c6c6cd",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-secondary-container": "#fefcff",
+                        "outline": "#76777d",
+                        "error": "#ba1a1a",
+                        "background": "#fcf8fa",
+                        "surface-dim": "#dcd9db",
+                        "surface": "#fcf8fa",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-high": "#eae7e9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-container": "#131b2e",
+                        "tertiary-fixed": "#fcdeb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-sm": ["Geist"],
+                        "headline-md": ["Geist"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface-bright font-body-md text-on-surface">
+<!-- Side Navigation Shell -->
+<aside class="fixed h-full w-sidebar-width left-0 top-0 bg-surface-bright border-r border-outline-variant flex flex-col h-full py-lg px-md z-50">
+<div class="mb-xl px-2">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Chronicle OS</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Global Newsroom</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Analytics is Active -->
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="font-body-md">Editorial</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md">Business Intelligence</span>
+</a>
+<a class="flex items-center gap-xs text-secondary font-bold border-l-4 border-secondary bg-secondary-fixed p-2 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-body-md">Ad Management</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-primary text-on-primary py-sm font-headline-sm rounded-lg hover:opacity-90 transition-all">
+                New Article
+            </button>
+<div class="pt-md border-t border-outline-variant flex flex-col gap-2">
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-body-md">Workspace Switcher</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-2 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-body-md">User Profile</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Shell -->
+<header class="flex items-center justify-between w-full h-16 px-lg ml-sidebar-width fixed top-0 bg-surface border-b border-outline-variant z-40">
+<div class="flex items-center gap-lg">
+<div class="flex items-center bg-surface-container-low px-md py-xs rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-64" placeholder="Search analytics..." type="text"/>
+</div>
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant font-body-sm hover:text-secondary transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-body-sm hover:text-secondary transition-colors" href="#">Editorial</a>
+<a class="text-secondary font-semibold border-b-2 border-secondary font-body-sm" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="sensors">sensors</span></button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<button class="bg-secondary text-on-secondary px-md py-xs text-body-sm font-semibold rounded-lg">Quick Create</button>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a senior digital analyst with a clean-cut appearance. He is set against a soft-focus office background with warm architectural lighting. The overall image has a corporate modern aesthetic, utilizing a neutral color palette of whites and greys with high-end photographic clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxfjf6CAUaYM6F2Si23lTeO1dn3tb2XkxGtxAN3clhA4GLZcEeFJ0XYw-pYDePGr70kzwXBOozJp5eZdqrcufLQ4aJnSR9she6k2VrQBshof2ebLnmEski5DeyanOz4oMgNge1HO2tYtWU6j5JUt9WhlK2_GsJhsB--TlNBhHGPIr-ykm8YxruoIZg8avoV7Taq53-1nvhzcrI-l0djHAMWRtg3L8l-BS9riOe76dBXoEeXHYvIJn5yO07FC9wVg62X--jlZBQS4g"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width mt-16 p-lg bg-background min-h-screen">
+<div class="max-w-[1600px] mx-auto">
+<!-- Dashboard Header -->
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-xs">Audience Analytics Hub</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Real-time behavior tracking across 124 global markets.</p>
+</div>
+<div class="flex gap-sm">
+<div class="bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="calendar_today">calendar_today</span>
+<span class="font-data-mono">LAST 24 HOURS</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant px-md py-sm rounded-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-error" data-icon="fiber_manual_record" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+<span class="font-data-mono">LIVE: 14,284 USERS</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="bento-grid">
+<!-- Geographic Heatmap (8 columns) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<div>
+<h3 class="font-headline-sm text-headline-sm">Global Reader Distribution</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Geographic Heatmap</p>
+</div>
+<div class="flex gap-xs">
+<span class="px-xs py-1 bg-surface-container-high rounded text-data-mono text-[10px]">NORTH AMERICA: 42%</span>
+<span class="px-xs py-1 bg-surface-container-high rounded text-data-mono text-[10px]">EUROPE: 28%</span>
+<span class="px-xs py-1 bg-surface-container-high rounded text-data-mono text-[10px]">ASIA: 15%</span>
+</div>
+</div>
+<div class="relative h-[400px] bg-surface-container-low">
+<img alt="World Map Heatmap" class="w-full h-full object-cover mix-blend-multiply opacity-80" data-alt="A highly detailed global topographic map visualized as a data-driven heatmap. Vibrant clusters of glowing Professional Blue and deep Indigo light indicate high density audience hotspots across major metropolitan hubs in North America, Europe, and East Asia. The background is a clean, minimalist grey, maintaining a high-density utility aesthetic with subtle grid lines overlaid." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYFs3yNx2MG4nheX_Wbsi5Im_pMHBvbjxDjmx-YdaXVPsJAUs4-0u21CUJQ-IdQeRuxbF1G39x_Ysc3ZfWnJXp057O8uPR40fVf_YV7OoK_T8Vym21FeMtUYEReOt9ZRElw8uJlne2UCA3JpJINZcLjOSNMFkIrifc7HZt2esDwOYwhEKE6IyF6ekc3RzGXmLYBMFIaYZhkAZ7U2YIMS6W9zYF9fXTDNANWI-_1-bbCbyRGADCZ6-LpUkrNvPpb3B_yN_HFtDbwYw"/>
+<!-- Simulated Data Overlays -->
+<div class="absolute top-20 left-[20%] w-4 h-4 bg-secondary rounded-full animate-pulse shadow-[0_0_15px_rgba(0,81,213,0.8)]"></div>
+<div class="absolute top-32 left-[25%] w-6 h-6 bg-secondary/60 rounded-full animate-pulse"></div>
+<div class="absolute top-24 left-[75%] w-3 h-3 bg-secondary rounded-full animate-pulse"></div>
+<div class="absolute bottom-10 right-10 bg-surface-container-lowest/90 backdrop-blur-md p-md border border-outline-variant rounded-lg">
+<p class="font-label-caps mb-1">TOP REGION</p>
+<p class="font-headline-sm text-secondary">New York, NY</p>
+<div class="w-full h-1 bg-surface-container-highest mt-2">
+<div class="w-4/5 h-full bg-secondary"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Traffic Source (4 columns) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-headline-sm text-headline-sm mb-base">Real-time Traffic Channels</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-lg">Source &amp; Attribution</p>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm font-semibold">Social Media</span>
+<span class="font-data-mono text-secondary">38.4%</span>
+</div>
+<div class="h-3 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[38.4%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm font-semibold">Direct Traffic</span>
+<span class="font-data-mono text-secondary">24.1%</span>
+</div>
+<div class="h-3 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[24.1%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm font-semibold">Organic Search</span>
+<span class="font-data-mono text-secondary">21.8%</span>
+</div>
+<div class="h-3 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[21.8%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="font-body-sm font-semibold">Referral</span>
+<span class="font-data-mono text-secondary">15.7%</span>
+</div>
+<div class="h-3 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[15.7%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-lg pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="p-xs bg-secondary/10 rounded">
+<span class="material-symbols-outlined text-secondary" data-icon="trending_up">trending_up</span>
+</div>
+<div>
+<p class="font-body-sm text-on-surface-variant">Social traffic up</p>
+<p class="font-headline-sm text-secondary">+12.4% vs LW</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Device & OS (4 columns) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-headline-sm text-headline-sm mb-base">Device Ecosystem</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-lg">Mobile vs Desktop vs Tablet</p>
+<div class="flex items-center justify-center py-lg relative">
+<!-- Circular Visual Simulation -->
+<svg class="w-48 h-48 -rotate-90">
+<circle class="text-surface-container-low" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="24"></circle>
+<circle class="text-secondary" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="150" stroke-width="24"></circle>
+<circle class="text-primary" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="400" stroke-width="24"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-display-lg text-primary text-[28px]">72%</span>
+<span class="font-label-caps text-on-surface-variant">MOBILE</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-xs mt-md">
+<div class="text-center">
+<p class="font-label-caps text-secondary">MOBILE</p>
+<p class="font-headline-sm">72%</p>
+</div>
+<div class="text-center border-x border-outline-variant">
+<p class="font-label-caps text-primary">DESKTOP</p>
+<p class="font-headline-sm">24%</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-on-surface-variant">TABLET</p>
+<p class="font-headline-sm">4%</p>
+</div>
+</div>
+</div>
+<!-- Peak Reading Hours (8 columns) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-lg">
+<div>
+<h3 class="font-headline-sm text-headline-sm mb-base">Engagement Heat-Grid</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Peak Reading Hours By Category</p>
+</div>
+<div class="flex items-center gap-xs text-[10px] font-data-mono">
+<span>LOW</span>
+<div class="flex gap-[2px]">
+<div class="w-3 h-3 bg-secondary/10"></div>
+<div class="w-3 h-3 bg-secondary/30"></div>
+<div class="w-3 h-3 bg-secondary/60"></div>
+<div class="w-3 h-3 bg-secondary/90"></div>
+</div>
+<span>HIGH</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<div class="min-w-[600px] grid grid-cols-25 gap-1">
+<div class="col-span-1"></div> <!-- Empty spacer -->
+<!-- Time Labels -->
+<div class="col-span-24 grid grid-cols-24 gap-1 mb-2">
+<span class="font-data-mono text-[9px] text-center">00</span>
+<span class="font-data-mono text-[9px] text-center">04</span>
+<span class="font-data-mono text-[9px] text-center">08</span>
+<span class="font-data-mono text-[9px] text-center">12</span>
+<span class="font-data-mono text-[9px] text-center">16</span>
+<span class="font-data-mono text-[9px] text-center">20</span>
+</div>
+<!-- Category Rows -->
+<div class="contents">
+<span class="font-label-caps text-[10px] flex items-center">TECH</span>
+<div class="col-span-24 grid grid-cols-24 gap-1">
+<div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div>
+<div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/50"></div><div class="h-6 bg-secondary/80"></div><div class="h-6 bg-secondary/95"></div>
+<div class="h-6 bg-secondary/90"></div><div class="h-6 bg-secondary/70"></div><div class="h-6 bg-secondary/50"></div><div class="h-6 bg-secondary/40"></div>
+<div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/40"></div><div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/80"></div>
+<div class="h-6 bg-secondary/70"></div><div class="h-6 bg-secondary/50"></div><div class="h-6 bg-secondary/40"></div><div class="h-6 bg-secondary/30"></div>
+<div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div>
+</div>
+</div>
+<div class="contents mt-1">
+<span class="font-label-caps text-[10px] flex items-center">POLITICS</span>
+<div class="col-span-24 grid grid-cols-24 gap-1">
+<div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/20"></div>
+<div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/90"></div><div class="h-6 bg-secondary/95"></div><div class="h-6 bg-secondary/80"></div>
+<div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/40"></div><div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/40"></div>
+<div class="h-6 bg-secondary/50"></div><div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/70"></div><div class="h-6 bg-secondary/90"></div>
+<div class="h-6 bg-secondary/95"></div><div class="h-6 bg-secondary/80"></div><div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/40"></div>
+<div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div>
+</div>
+</div>
+<div class="contents mt-1">
+<span class="font-label-caps text-[10px] flex items-center">LIFESTYLE</span>
+<div class="col-span-24 grid grid-cols-24 gap-1">
+<div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div>
+<div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/40"></div><div class="h-6 bg-secondary/50"></div>
+<div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/70"></div><div class="h-6 bg-secondary/80"></div><div class="h-6 bg-secondary/90"></div>
+<div class="h-6 bg-secondary/95"></div><div class="h-6 bg-secondary/95"></div><div class="h-6 bg-secondary/90"></div><div class="h-6 bg-secondary/80"></div>
+<div class="h-6 bg-secondary/70"></div><div class="h-6 bg-secondary/60"></div><div class="h-6 bg-secondary/50"></div><div class="h-6 bg-secondary/40"></div>
+<div class="h-6 bg-secondary/30"></div><div class="h-6 bg-secondary/20"></div><div class="h-6 bg-secondary/10"></div><div class="h-6 bg-secondary/10"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Trends & Keywords (6 columns) -->
+<div class="col-span-12 lg:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-sm text-headline-sm">Rising Keywords</h3>
+<span class="material-symbols-outlined text-outline" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="px-md py-xs bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-semibold flex items-center gap-xs">
+                            #GenAI Regulation <span class="text-secondary font-data-mono">+240%</span>
+</span>
+<span class="px-md py-xs bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-semibold flex items-center gap-xs">
+                            #SustainableCities <span class="text-secondary font-data-mono">+185%</span>
+</span>
+<span class="px-md py-xs bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-semibold flex items-center gap-xs">
+                            #Web4.0 <span class="text-secondary font-data-mono">+92%</span>
+</span>
+<span class="px-md py-xs bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-semibold flex items-center gap-xs">
+                            #RemoteCulture <span class="text-secondary font-data-mono">+45%</span>
+</span>
+<span class="px-md py-xs bg-surface-container-low border border-outline-variant rounded-full text-body-sm font-semibold flex items-center gap-xs">
+                            #FintechDisruption <span class="text-secondary font-data-mono">+31%</span>
+</span>
+</div>
+<div class="mt-lg">
+<p class="font-label-caps text-on-surface-variant mb-md">PREDICTED SEARCH VOLUMES (24H)</p>
+<div class="space-y-3">
+<div class="flex items-center gap-md">
+<div class="flex-1 h-2 bg-surface-container-low rounded-full">
+<div class="h-full bg-primary w-full"></div>
+</div>
+<span class="font-data-mono text-[11px] w-8">1.2M</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex-1 h-2 bg-surface-container-low rounded-full">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+<span class="font-data-mono text-[11px] w-8">840K</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex-1 h-2 bg-surface-container-low rounded-full">
+<div class="h-full bg-primary w-1/2"></div>
+</div>
+<span class="font-data-mono text-[11px] w-8">520K</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Viral Potential Articles (6 columns) -->
+<div class="col-span-12 lg:col-span-6 bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<h3 class="font-headline-sm text-headline-sm mb-base">Viral Potential</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-md">Early Signal Detection</p>
+<div class="space-y-4">
+<div class="group p-xs -mx-xs hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex gap-md">
+<div class="w-16 h-16 bg-surface-container-high rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Viral article thumbnail" class="w-full h-full object-cover" data-alt="A futuristic, high-contrast digital image of a neural network glowing in space. The image features deep blues and electric cyans with particles of light tracing connections across the void. It captures a sense of massive information flow and advanced intelligence, matching a clinical, high-stakes editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkCqA14p3LABkqorSDgKrYFg0-JDedi7wlVlzhLSNpsoa3ZRaHpkjPeEiXNzctp9ReO85rIpDc9unPsafhzpnnVLEYK0E9UJWRFMzGCwBaq-OUCSVAc_j6dh3hAF0vL9EYFPYK-H7ICdxi30hmNpzAURnt6B8s0fLm6jhyfvbihF5YANtMsUhS7Ke_0gDRi8uIsfL7kOfRr0nbfkIrq4PFr75JhtksJ5RsDKZiy1s0SmdO782C3YhDye2am7TjF3CbWc92L0oM-0o"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-sm text-[14px] leading-tight mb-1">The Rise of the Post-App Internet Ecosystem</h4>
+<div class="flex items-center text-error gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-data-mono text-[11px]">9.8</span>
+</div>
+</div>
+<div class="flex gap-md mt-1">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="share">share</span>
+<span class="text-data-mono text-[11px]">1.2K Shares</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="timer">timer</span>
+<span class="text-data-mono text-[11px]">4m 12s Read</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="group p-xs -mx-xs hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
+<div class="flex gap-md">
+<div class="w-16 h-16 bg-surface-container-high rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Viral article thumbnail" class="w-full h-full object-cover" data-alt="An architectural photograph of a sleek, glass skyscraper reflecting a stormy, deep blue sky. The building is sharp and modern with cold steel accents, representing structural authority and business power. High-key contrast lighting emphasizes the rigid, block-based architecture of the city at dusk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAReP8Q-88Qn89ecDEolHQvUu1-oHjoYh9h-DvYbbWeDLwSIEIe75n22ceAuIdbJ_o7ggxqWna-yDCoDZ4IdeY-DsnfYLoIiPKgh5vyJ8YNRnYA9nVAG14kDsoKlHHkLCarok1iH58TmZ19m9XFQebp5p_KkRHlE5j9t1Zz9z6kaCZfusZ1XVkpwoBgX6aM0j-04OGJeg6-mpSAnvh0NaD5dlC7nYs3edNcr6tViJLDiPKGfKdIqeRJQGT9IPRBeQBvc7_OHn3ZAYI"/>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-headline-sm text-[14px] leading-tight mb-1">Commercial Real Estate's Quiet Liquidity Crisis</h4>
+<div class="flex items-center text-error gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-data-mono text-[11px]">8.4</span>
+</div>
+</div>
+<div class="flex gap-md mt-1">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="share">share</span>
+<span class="text-data-mono text-[11px]">850 Shares</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" data-icon="timer">timer</span>
+<span class="text-data-mono text-[11px]">6m 45s Read</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-lg border border-secondary text-secondary py-xs rounded-lg font-headline-sm hover:bg-secondary/5 transition-all">
+                        VIEW OPPORTUNITY REPORT
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<div class="fixed bottom-lg right-lg z-50">
+<button class="bg-primary text-on-primary w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+</button>
+</div>
+</body></html>
