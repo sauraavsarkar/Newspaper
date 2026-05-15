@@ -1,281 +1,415 @@
-<div class="p-8 bg-gray-50 min-h-screen">
-    <!-- Header Section -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
-        <div>
-            <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">
-                Editorial Newsroom
-            </h2>
-            <p class="text-gray-500 mt-2 font-medium">Craft, manage, and publish your breaking stories.</p>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            <div class="relative flex-grow sm:w-64">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </span>
-                <input type="text" wire:model.live="searchTerm" placeholder="Search articles..." class="block w-full pl-10 pr-4 py-3 rounded-xl border-gray-200 bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-200 shadow-sm font-medium">
+<div class="py-6 space-y-8" 
+     x-data="{ 
+        view: @entangle('isModalOpen').live ? 'editor' : 'registry',
+        sidebarOpen: true,
+        isMobile: window.innerWidth < 1024
+     }"
+     x-init="window.addEventListener('resize', () => isMobile = window.innerWidth < 1024)">
+    
+    @push('styles')
+    <style>
+        /* CKEditor Custom Minimalist Style for Dark Mode */
+        .ck-editor__editable_inline { 
+            min-height: 50vh; 
+            border: none !important; 
+            padding: 0 !important; 
+            font-size: 1.15rem !important; 
+            line-height: 1.9 !important; 
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .dark .ck-editor__editable_inline {
+            color: #f4f4f5 !important;
+        }
+        .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) { background-color: transparent !important; }
+        .ck.ck-toolbar { 
+            border: none !important; 
+            padding: 0.5rem 0 !important; 
+            margin-bottom: 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .ck.ck-button { border-radius: 8px !important; }
+        .ck.ck-editor { border: none !important; }
+        
+        .dark .ck.ck-toolbar {
+            background: rgba(24, 24, 27, 0.9) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        .dark .ck.ck-button {
+            color: #a1a1aa !important;
+        }
+        .dark .ck.ck-button:hover, .dark .ck.ck-button.ck-on {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #f4f4f5 !important;
+        }
+        .dark .ck.ck-tooltip__text { background: #27272a !important; color: #f4f4f5 !important; }
+    </style>
+    @endpush
+
+    <!-- Registry View (Responsive Table/Cards) -->
+    @if(!$isModalOpen)
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
+                    Story Journal
+                </h1>
+                <p class="text-zinc-500 dark:text-zinc-400 mt-2 font-medium">Manage and curate your editorial pipeline.</p>
             </div>
-            <button wire:click="create" class="inline-flex items-center justify-center px-6 py-3 font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-lg shadow-indigo-100">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                New Story
-            </button>
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="relative w-full md:w-96 group">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" wire:model.live="searchTerm" placeholder="Search archive..." class="w-full bg-white/70 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                </div>
+                <button wire:click="create" class="shrink-0 flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    <span class="hidden xs:inline">Draft Story</span>
+                </button>
+            </div>
         </div>
-    </div>
 
-    @if (session()->has('message'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center text-indigo-800 shadow-sm transition-all duration-500">
-            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-            <span class="font-semibold">{{ session('message') }}</span>
-        </div>
-    @endif
-
-    <!-- Article Grid/Table -->
-    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100">
+        <!-- Desktop View -->
+        <div class="hidden lg:block glass-card rounded-[2rem] overflow-hidden border border-zinc-200 dark:border-white/5">
+            <table class="w-full text-left">
                 <thead>
-                    <tr class="bg-gray-50/50">
-                        <th class="px-8 py-5 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Story</th>
-                        <th class="px-8 py-5 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Category</th>
-                        <th class="px-8 py-5 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-5 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Author</th>
-                        <th class="px-8 py-5 text-right text-xs font-bold text-gray-400 uppercase tracking-widest">Actions</th>
+                    <tr class="border-b border-zinc-200 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50">
+                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Story Details</th>
+                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Category</th>
+                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Status</th>
+                        <th class="px-8 py-5 text-right text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-zinc-200 dark:divide-white/5">
                     @forelse ($articles as $article)
-                        <tr class="group hover:bg-indigo-50/20 transition-all duration-300">
+                        <tr class="group hover:bg-zinc-100/50 dark:hover:bg-indigo-500/10 transition-colors duration-300">
                             <td class="px-8 py-6">
-                                <div class="flex items-center">
-                                    <div class="relative mr-4 shrink-0">
+                                <div class="flex items-center gap-5">
+                                    <div class="h-16 w-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 overflow-hidden shrink-0 border border-zinc-200 dark:border-white/5">
                                         @if($article->featured_image)
-                                            <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-14 w-14 rounded-2xl object-cover shadow-md group-hover:scale-105 transition-transform duration-300">
+                                            <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-full w-full object-cover">
                                         @else
-                                            <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-400">
-                                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            <div class="h-full w-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             </div>
                                         @endif
-                                        @if($article->is_featured)
-                                            <span class="absolute -top-1 -right-1 flex h-4 w-4">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-4 w-4 bg-yellow-500 shadow-sm border-2 border-white"></span>
-                                            </span>
-                                        @endif
                                     </div>
-                                    <div class="min-w-0">
-                                        <div class="text-lg font-bold text-gray-900 leading-tight line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $article->title }}</div>
-                                        <div class="text-xs text-gray-400 mt-1 font-mono uppercase tracking-tight">{{ $article->slug }}</div>
+                                    <div>
+                                        <button wire:click="edit({{ $article->id }})" class="text-lg font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-left">{{ $article->title }}</button>
+                                        <div class="flex items-center gap-3 mt-1.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                                            <span>{{ $article->author->name }}</span>
+                                            <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600"></span>
+                                            <span>{{ $article->created_at->format('M d, Y') }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-8 py-6">
-                                <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-100">
+                                <span class="inline-flex px-3 py-1 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-white/5 text-[10px] font-bold uppercase rounded-lg">
                                     {{ $article->category->name }}
                                 </span>
                             </td>
                             <td class="px-8 py-6">
-                                <span class="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest
-                                    {{ $article->status === 'published' ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200' : '' }}
-                                    {{ $article->status === 'draft' ? 'bg-amber-100 text-amber-700 ring-1 ring-amber-200' : '' }}
-                                    {{ $article->status === 'scheduled' ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-200' : '' }}
-                                    {{ $article->status === 'archived' ? 'bg-rose-100 text-rose-700 ring-1 ring-rose-200' : '' }}
-                                ">
-                                    {{ $article->status }}
-                                </span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs mr-2">
-                                        {{ substr($article->author->name, 0, 1) }}
-                                    </div>
-                                    <span class="text-sm font-semibold text-gray-700">{{ $article->author->name }}</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full 
+                                        {{ $article->status === 'published' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : '' }}
+                                        {{ $article->status === 'pending' ? 'bg-indigo-500' : '' }}
+                                        {{ $article->status === 'draft' ? 'bg-zinc-400 dark:bg-zinc-600' : '' }}
+                                        {{ $article->status === 'scheduled' ? 'bg-amber-500' : '' }}
+                                        {{ $article->status === 'rejected' ? 'bg-rose-500' : '' }}
+                                    "></div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
                                 </div>
                             </td>
-                            <td class="px-8 py-6 text-right space-x-2">
-                                <button wire:click="edit({{ $article->id }})" class="p-2 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-sm border border-indigo-100">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
-                                <button wire:click="delete({{ $article->id }})" 
-                                        onclick="confirm('Are you sure you want to delete this story?') || event.stopImmediatePropagation()"
-                                        class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-sm border border-rose-100">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
+                            <td class="px-8 py-6 text-right">
+                                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button wire:click="edit({{ $article->id }})" class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    </button>
+                                    <button wire:click="delete({{ $article->id }})" 
+                                            onclick="confirm('Move this story to trash?') || event.stopImmediatePropagation()"
+                                            class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500 transition-all shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-8 py-20 text-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="h-20 w-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                        <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
-                                    </div>
-                                    <p class="text-gray-400 font-medium text-lg">No stories found. Let's write something today!</p>
-                                </div>
+                            <td colspan="4" class="px-8 py-20 text-center">
+                                <p class="text-sm font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">No manuscripts found</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            @if($articles->hasPages())
+                <div class="px-8 py-6 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-white/5">
+                    {{ $articles->links() }}
+                </div>
+            @endif
         </div>
-        <div class="px-8 py-6 bg-gray-50/50 border-t border-gray-100">
-            {{ $articles->links() }}
-        </div>
-    </div>
 
-    <!-- Editorial Modal -->
-    @if($isModalOpen)
-        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="editorial-modal" role="dialog" aria-modal="true">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-md transition-opacity" aria-hidden="true" wire:click="$set('isModalOpen', false)"></div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                <div class="inline-block align-bottom bg-white rounded-[2rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full border border-gray-100">
-                    <div class="flex flex-col lg:flex-row h-[90vh]">
-                        <!-- Left Panel: Form -->
-                        <div class="flex-grow overflow-y-auto p-10 bg-white">
-                            <div class="flex justify-between items-center mb-10">
-                                <div>
-                                    <h3 class="text-4xl font-black text-gray-900">{{ $editingArticleId ? 'Refine Story' : 'New Draft' }}</h3>
-                                    <p class="text-gray-400 mt-1 font-medium">Compose your article with our advanced editor.</p>
-                                </div>
-                                <button wire:click="$set('isModalOpen', false)" class="p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
+        <!-- Mobile View (Cards) -->
+        <div class="lg:hidden space-y-4">
+            @forelse ($articles as $article)
+                <div class="glass-card p-5 rounded-3xl border border-zinc-200 dark:border-white/5 space-y-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="h-14 w-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 shrink-0 border border-zinc-200 dark:border-white/5 overflow-hidden">
+                                @if($article->featured_image)
+                                    <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-full w-full object-cover">
+                                @endif
                             </div>
-
-                            <form wire:submit.prevent="save" id="storyForm">
-                                <div class="grid grid-cols-1 gap-8">
-                                    <div class="space-y-6">
-                                        <div class="group">
-                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Headline</label>
-                                            <input type="text" wire:model.live="title" placeholder="A compelling headline goes here..." class="block w-full px-6 py-5 rounded-3xl border-gray-100 bg-gray-50/50 text-2xl font-bold focus:bg-white focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all @error('title') border-rose-400 @enderror">
-                                            @error('title') <p class="mt-2 text-sm text-rose-500 font-bold">{{ $message }}</p> @enderror
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">URL Identifier</label>
-                                                <div class="relative flex items-center">
-                                                    <span class="absolute left-6 text-gray-300 font-mono text-sm">/</span>
-                                                    <input type="text" wire:model="slug" class="block w-full pl-10 pr-6 py-4 rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all font-mono text-sm @error('slug') border-rose-400 @enderror">
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Primary Category</label>
-                                                <select wire:model="category_id" class="block w-full px-6 py-4 rounded-2xl border-gray-100 bg-gray-50/50 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all font-bold text-gray-700">
-                                                    <option value="">Select a category...</option>
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                @error('category_id') <p class="mt-2 text-sm text-rose-500 font-bold">{{ $message }}</p> @enderror
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Brief Excerpt</label>
-                                            <textarea wire:model="excerpt" rows="2" placeholder="Summary for homepages and SEO..." class="block w-full px-6 py-4 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-500 transition-all font-medium"></textarea>
-                                        </div>
-
-                                        <div wire:ignore>
-                                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 text-center">Body Content</label>
-                                            <div class="rounded-3xl border border-gray-100 overflow-hidden shadow-inner">
-                                                <div id="editor" x-data x-init="
-                                                    ClassicEditor
-                                                        .create($refs.ckeditor)
-                                                        .then(editor => {
-                                                            editor.model.document.on('change:data', () => {
-                                                                @this.set('content', editor.getData());
-                                                            })
-                                                        })
-                                                " x-ref="ckeditor">
-                                                    {!! $content !!}
-                                                </div>
-                                            </div>
-                                            @error('content') <p class="mt-2 text-sm text-rose-500 font-bold">{{ $message }}</p> @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                            <div>
+                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2">{{ $article->title }}</h4>
+                                <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">{{ $article->created_at->format('M d, Y') }}</span>
+                            </div>
                         </div>
-
-                        <!-- Right Panel: Metadata & Settings -->
-                        <div class="lg:w-96 bg-gray-50/50 p-10 border-l border-gray-100 flex flex-col justify-between">
-                            <div class="space-y-8">
-                                <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-5 text-center">Cover Visual</label>
-                                    <div class="relative group cursor-pointer h-48 rounded-3xl bg-white border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-indigo-400">
-                                        @if ($featured_image)
-                                            <img src="{{ $featured_image->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <span class="text-white font-bold text-sm bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">Change Media</span>
-                                            </div>
-                                        @else
-                                            <svg class="w-12 h-12 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                            <p class="text-[10px] text-gray-400 mt-2 font-black uppercase">Upload Image</p>
-                                        @endif
-                                        <input type="file" wire:model="featured_image" class="absolute inset-0 opacity-0 cursor-pointer">
-                                    </div>
-                                    @error('featured_image') <p class="mt-2 text-sm text-rose-500 font-bold">{{ $message }}</p> @enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-5 text-center">Publishing Controls</label>
-                                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-6">
-                                        <div>
-                                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Target Status</label>
-                                            <select wire:model="status" class="w-full py-2 bg-transparent font-black text-indigo-600 focus:outline-none cursor-pointer">
-                                                <option value="draft">● Draft</option>
-                                                <option value="published">● Published</option>
-                                                <option value="scheduled">● Scheduled</option>
-                                                <option value="archived">● Archived</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex items-center justify-between py-2 border-t border-gray-50">
-                                            <span class="text-sm font-bold text-gray-700">Highlight Story</span>
-                                            <label class="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" wire:model="is_featured" class="sr-only peer">
-                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-5 text-center">Taxonomy Tags</label>
-                                    <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto bg-white p-6 rounded-3xl border border-gray-100 shadow-inner">
-                                        @foreach($tags as $tag)
-                                            <label class="group relative flex items-center cursor-pointer">
-                                                <input type="checkbox" wire:model="selectedTags" value="{{ $tag->id }}" class="sr-only peer">
-                                                <div class="px-4 py-2 rounded-xl text-[10px] font-bold border border-gray-100 bg-gray-50 text-gray-500 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">
-                                                    #{{ $tag->name }}
-                                                </div>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="pt-8">
-                                <button type="submit" form="storyForm" wire:loading.attr="disabled" class="w-full py-5 rounded-[2rem] bg-indigo-600 text-white text-lg font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center">
-                                    <span wire:loading.remove> {{ $editingArticleId ? 'Update Story' : 'Launch Story' }} </span>
-                                    <span wire:loading class="flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                        Processing...
-                                    </span>
-                                </button>
-                            </div>
+                        <div class="flex flex-col gap-2">
+                            <button wire:click="edit({{ $article->id }})" class="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-white/5">
+                        <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 text-[9px] font-black uppercase rounded">{{ $article->category->name }}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full {{ $article->status === 'published' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600' }}"></div>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
                         </div>
                     </div>
                 </div>
+            @empty
+                <div class="p-12 text-center glass-card rounded-3xl">
+                    <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">Draft list empty</p>
+                </div>
+            @endforelse
+            <div class="mt-4">
+                {{ $articles->links() }}
             </div>
         </div>
-    @endif
 
-    <script src="https://cdn.ckeditor.com/classic/27.1.0/classic/ckeditor.js"></script>
-    <style>
-        .ck-editor__editable_inline { min-height: 400px; border: none !important; padding: 2rem !important; font-size: 1.125rem !important; line-height: 1.75 !important; }
-        .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) { background-color: transparent !important; }
-        .ck.ck-toolbar { border: none !important; background: #f9fafb !important; padding: 0.5rem 1rem !important; border-bottom: 1px solid #f3f4f6 !important; }
-    </style>
+    @else
+        <!-- Editor View (Modern Layout) -->
+        <div class="glass-card rounded-[2rem] overflow-hidden flex flex-col lg:flex-row h-[calc(100vh-140px)] border border-zinc-200 dark:border-white/5 shadow-2xl relative z-10">
+            
+            <button wire:click="$set('isModalOpen', false)" class="absolute top-6 right-6 lg:left-6 lg:right-auto z-20 p-2 rounded-full bg-white/50 dark:bg-zinc-900/50 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white backdrop-blur-md transition-colors border border-zinc-200 dark:border-white/10 shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </button>
+
+            <!-- Left: Writing Area -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar px-6 sm:px-12 md:px-20 py-10 sm:py-20 lg:border-r border-zinc-200 dark:border-white/5 bg-white/30 dark:bg-zinc-950/30">
+                <div class="max-w-3xl mx-auto lg:ml-20">
+                    <form id="storyForm" wire:submit.prevent="save" class="space-y-10">
+                        <!-- Headline -->
+                        <textarea 
+                            wire:model.live="title" 
+                            rows="2"
+                            placeholder="A compelling headline..." 
+                            class="w-full bg-transparent border-none focus:ring-0 text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white placeholder-zinc-300 dark:placeholder-zinc-700 resize-none p-0 leading-tight"
+                        ></textarea>
+                        
+                        <div class="flex flex-wrap items-center gap-6 py-6 border-y border-zinc-200 dark:border-white/5">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Editorial Category</label>
+                                <select wire:model="category_id" class="block bg-transparent border-none p-0 text-xs font-bold text-indigo-600 dark:text-indigo-400 focus:ring-0 focus:outline-none appearance-none">
+                                    <option value="" class="dark:bg-zinc-900">Choose Path...</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" class="dark:bg-zinc-900">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="h-8 w-[1px] bg-zinc-200 dark:bg-white/10 hidden sm:block"></div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Permanent Slug</label>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-[10px] font-bold text-zinc-400 dark:text-zinc-600">/news/</span>
+                                    <input type="text" wire:model="slug" class="bg-transparent border-none p-0 text-xs font-bold text-zinc-700 dark:text-zinc-300 focus:ring-0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="pt-4">
+                            <textarea wire:model="excerpt" rows="2" placeholder="Write a brief teaser for the news feed..." class="w-full bg-transparent border-none focus:ring-0 text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 font-medium italic p-0 resize-none leading-relaxed"></textarea>
+                        </div>
+
+                        <div wire:ignore class="pt-10">
+                            <div id="editor" x-data="{ 
+                                init() {
+                                    ClassicEditor
+                                        .create($refs.ckeditor)
+                                        .then(editor => {
+                                            editor.model.document.on('change:data', () => {
+                                                clearTimeout(this.timeout);
+                                                this.timeout = setTimeout(() => {
+                                                    @this.set('content', editor.getData());
+                                                }, 500);
+                                            })
+                                        })
+                                }
+                            }" x-init="init()" x-ref="ckeditor">
+                                {!! $content !!}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Command Center Sidebar -->
+            <aside class="w-full lg:w-[420px] border-t lg:border-t-0 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col h-full overflow-hidden"
+                   x-show="!isMobile || sidebarOpen"
+                   x-transition:enter="transition ease-out duration-300"
+                   x-transition:enter-start="translate-x-full"
+                   x-transition:enter-end="translate-x-0">
+                
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-12">
+                    
+                    <!-- Feature Image / Media Frame -->
+                    <div class="group">
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Story Canvas</label>
+                            @if($featured_image)
+                                <button wire:click="$set('featured_image', null)" class="text-[9px] font-bold text-rose-500 uppercase hover:underline">Remove</button>
+                            @endif
+                        </div>
+                        <div class="relative aspect-[16/10] rounded-[2rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 shadow-inner group-hover:shadow-xl transition-all duration-500">
+                            @if ($featured_image)
+                                <img src="{{ $featured_image->temporaryUrl() }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-zinc-900/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center backdrop-blur-[2px]">
+                                    <div class="px-6 py-2.5 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full shadow-2xl flex items-center gap-2">
+                                        <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <span class="text-[10px] font-black text-zinc-900 dark:text-white uppercase tracking-widest">Update Visual</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600">
+                                    <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all">
+                                        <svg class="w-6 h-6 text-zinc-300 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    </div>
+                                    <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">Deploy Cover Image</span>
+                                </div>
+                            @endif
+                            <input type="file" wire:model="featured_image" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                        </div>
+                        @error('featured_image') <p class="text-[10px] text-rose-500 font-bold mt-3 px-2">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- Workflow & Status -->
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Lifecycle Stage</label>
+                            <div class="flex items-center gap-1.5">
+                                <span class="h-2 w-2 rounded-full {{ $status === 'published' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500' }}"></span>
+                                <span class="text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400 tracking-tighter">{{ $status }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white/50 dark:bg-zinc-950/50 p-1.5 rounded-[1.5rem] flex flex-col gap-1 border border-zinc-200 dark:border-white/5">
+                            @foreach(['draft' => 'Draft Manuscript', 'pending' => 'Editorial Review', 'published' => 'Public Release', 'scheduled' => 'Future Launch'] as $val => $label)
+                                <button 
+                                    wire:click="$set('status', '{{ $val }}')"
+                                    class="flex items-center justify-between px-5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300
+                                    {{ $status === $val ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-lg shadow-zinc-200/50 dark:shadow-none scale-[1.02] translate-x-1' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-white/50 dark:hover:bg-zinc-800/50' }}"
+                                >
+                                    <span>{{ $label }}</span>
+                                    @if($status === $val)
+                                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+
+                        @if($status === 'scheduled')
+                            <div class="p-6 bg-indigo-50/50 dark:bg-indigo-500/10 rounded-3xl border border-indigo-100/50 dark:border-indigo-500/20 space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <label class="text-[10px] font-black text-indigo-900 dark:text-indigo-400 uppercase tracking-widest">Scheduled Slot</label>
+                                </div>
+                                <input type="datetime-local" wire:model="published_at" class="w-full bg-white dark:bg-zinc-900 border-none rounded-xl py-3 px-4 text-xs font-bold text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                        @endif
+
+                        <div class="flex items-center justify-between p-6 bg-white/50 dark:bg-zinc-950/50 rounded-3xl border border-zinc-200 dark:border-white/5 shadow-sm">
+                            <div>
+                                <span class="text-[10px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest block">Featured Story</span>
+                                <span class="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 block">Highlight on main gateway</span>
+                            </div>
+                            <div class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="is_featured" class="sr-only peer">
+                                <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Taxonomy / Tags -->
+                    <div class="space-y-6">
+                        <label class="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Taxonomy Tags</label>
+                        <div class="flex flex-wrap gap-2.5">
+                            @foreach($tags as $tag)
+                                <label class="cursor-pointer group">
+                                    <input type="checkbox" wire:model="selectedTags" value="{{ $tag->id }}" class="sr-only peer">
+                                    <div class="px-5 py-2.5 rounded-2xl border border-zinc-200 dark:border-white/5 bg-white dark:bg-zinc-900 text-[10px] font-black text-zinc-500 dark:text-zinc-400 transition-all duration-300 peer-checked:bg-zinc-900 dark:peer-checked:bg-white peer-checked:text-white dark:peer-checked:text-zinc-900 peer-checked:border-zinc-900 dark:peer-checked:border-white group-hover:border-zinc-300 dark:group-hover:border-white/20">
+                                        #{{ strtoupper($tag->name) }}
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Remarks / Feedback Loop -->
+                    @if($editingArticleId && count($remarks) > 0)
+                        <div class="space-y-6 pt-6 border-t border-zinc-200 dark:border-white/5">
+                            <label class="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Editorial Feedback</label>
+                            <div class="space-y-4">
+                                @foreach($remarks as $remarkItem)
+                                    <div class="p-6 bg-amber-50/50 dark:bg-amber-500/10 rounded-[2rem] border border-amber-100/50 dark:border-amber-500/20 relative overflow-hidden group">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-7 h-7 rounded-xl bg-amber-200 dark:bg-amber-500/30 flex items-center justify-center text-[10px] font-black text-amber-700 dark:text-amber-400">{{ substr($remarkItem->user->name, 0, 1) }}</div>
+                                                <span class="text-[10px] font-black text-amber-900 dark:text-amber-400 uppercase">{{ $remarkItem->user->name }}</span>
+                                            </div>
+                                            <span class="text-[8px] font-bold text-amber-500 dark:text-amber-600 uppercase">{{ $remarkItem->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="text-xs text-amber-800/80 dark:text-amber-400/80 leading-relaxed font-medium italic">"{{ $remarkItem->remark }}"</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Footer Operations -->
+                <div class="p-8 bg-white/50 dark:bg-zinc-950/50 border-t border-zinc-200 dark:border-white/5 space-y-4 backdrop-blur-md">
+                    @if(auth()->user()->hasRole(['Admin', 'Editor']) && $status === 'pending')
+                        <div class="grid grid-cols-2 gap-3">
+                            <button wire:click="approve" class="py-4 bg-emerald-600 dark:bg-emerald-500/20 text-white dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-700 dark:hover:bg-emerald-500/30 transition-all shadow-xl shadow-emerald-500/20 dark:shadow-none flex items-center justify-center gap-2 border border-transparent dark:border-emerald-500/30">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                Approve
+                            </button>
+                            <button wire:click="reject" class="py-4 bg-rose-600 dark:bg-rose-500/20 text-white dark:text-rose-400 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-rose-700 dark:hover:bg-rose-500/30 transition-all shadow-xl shadow-rose-500/20 dark:shadow-none flex items-center justify-center gap-2 border border-transparent dark:border-rose-500/30">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                Reject
+                            </button>
+                        </div>
+                    @endif
+                    
+                    <button wire:click="save" class="w-full py-5 bg-indigo-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-500/30 flex items-center justify-center gap-3 group">
+                        <span>Commit to Registry</span>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    </button>
+
+                    @if($status === 'draft' || $status === 'rejected')
+                        <button wire:click="submitForReview" class="w-full py-4 mt-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-amber-500/20 transition-all border border-amber-500/20 flex items-center justify-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Request Editorial Approval
+                        </button>
+                    @endif
+                </div>
+            </aside>
+        </div>
+    @endif
 </div>

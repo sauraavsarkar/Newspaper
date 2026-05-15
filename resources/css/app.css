@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --chronicle-bg: 0 0% 98%;
+        --chronicle-text: 240 10% 10%;
+    }
+
+    .dark {
+        --chronicle-bg: 240 10% 3.9%;
+        --chronicle-text: 0 0% 98%;
+    }
+
+    body {
+        @apply bg-zinc-50 text-zinc-900 dark:bg-[#09090b] dark:text-zinc-100 antialiased selection:bg-indigo-500/30 transition-colors duration-300;
+        font-family: 'Outfit', sans-serif;
+    }
+}
+
+@layer components {
+    .glass-card {
+        @apply bg-white/70 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-white/5 shadow-2xl transition-colors duration-300;
+    }
+
+    .glass-sidebar {
+        @apply bg-white/80 dark:bg-zinc-950/50 backdrop-blur-2xl border-r border-zinc-200 dark:border-white/5 transition-colors duration-300;
+    }
+
+    .accent-gradient {
+        @apply bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500;
+    }
+
+    .nav-link-active {
+        @apply bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-r-2 border-indigo-500;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-zinc-300 dark:bg-zinc-800 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-700 transition-colors;
+}

@@ -5,32 +5,79 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Chronicle OS') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+        @stack('styles')
+        
+        <!-- Prevent Flash of Unstyled Content -->
+        <script>
+            if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        </script>
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            <livewire:layout.navigation />
+    <body class="font-sans antialiased bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 flex h-screen overflow-hidden transition-colors duration-300"
+          x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) }" 
+          x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', val); document.documentElement.classList.toggle('dark', val); })">
+        
+        <!-- Sidebar Navigation -->
+        <livewire:layout.navigation />
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col h-screen relative overflow-hidden">
+            <!-- Top Header -->
+            <header class="glass-sidebar h-16 flex items-center justify-between px-8 z-10 border-b border-zinc-200 dark:border-white/5 shadow-sm">
+                <div class="flex items-center gap-4">
+                    @if (isset($header))
                         {{ $header }}
-                    </div>
-                </header>
-            @endif
+                    @else
+                        <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Overview</h2>
+                    @endif
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Dark Mode Toggle -->
+                    <button @click="darkMode = !darkMode" class="p-2 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
+                    <!-- Global Search Placeholder -->
+                    <div class="relative hidden md:block">
+                        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <input type="text" placeholder="Search anything..." class="bg-white dark:bg-zinc-900/50 border border-zinc-300 dark:border-white/5 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64 transition-all text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-sm dark:shadow-none">
+                    </div>
+
+                    <!-- User Menu Toggle (Triggered in Navigation) -->
+                    <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-indigo-500/20">
+                        <div class="h-full w-full rounded-full bg-white dark:bg-zinc-950 flex items-center justify-center">
+                            <span class="text-xs font-bold text-indigo-600 dark:text-white">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Area -->
+            <main class="flex-1 overflow-y-auto relative z-0 p-8 pb-20">
+                <!-- Abstract Glow (Only visible in dark mode, or different in light mode) -->
+                <div x-show="darkMode" class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none transition-opacity duration-500"></div>
+                <div x-show="!darkMode" class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-indigo-200/40 blur-[120px] rounded-full pointer-events-none transition-opacity duration-500"></div>
+                
+                <div class="relative z-10 max-w-7xl mx-auto">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
+        
+        @stack('scripts')
     </body>
 </html>
