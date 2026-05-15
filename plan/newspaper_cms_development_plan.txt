@@ -2,10 +2,10 @@
 # Newspaper CMS — Development Plan
 
 ## Project Name
-NewsFlow CMS
+Today Morning News
 
 ## Project Overview
-NewsFlow CMS is a modern digital newspaper content management system built using Laravel, Livewire, Tailwind CSS, and MySQL.
+Today Morning News is a modern digital newspaper content management system built using Laravel, Livewire, Tailwind CSS, and MySQL.
 
 The platform allows journalists, editors, and administrators to collaboratively create, review, manage, publish, and analyze news content in real time.
 

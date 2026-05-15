@@ -18,7 +18,8 @@ class Home extends Component
     public function render()
     {
         // Fetch featured article for the Hero section
-        $featuredArticle = Article::where('status', 'published')
+        $featuredArticle = Article::with(['category', 'author'])
+            ->where('status', 'published')
             ->where('is_featured', true)
             ->latest('published_at')
             ->first();
@@ -31,10 +32,13 @@ class Home extends Component
             ->get();
 
         // Fetch trending articles (most viewed in last 7 days)
-        $trendingArticles = Article::trending(7, 5)->get();
+        $trendingArticles = Article::with('category')
+            ->trending(7, 5)
+            ->get();
 
         // Fetch latest articles based on search
-        $latestArticles = Article::where('status', 'published')
+        $latestArticles = Article::with(['category', 'author'])
+            ->where('status', 'published')
             ->when($this->search, function ($query) {
                 return $query->where(function ($q) {
                     $q->where('title', 'like', '%' . $this->search . '%')

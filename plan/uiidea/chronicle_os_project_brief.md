@@ -1,7 +1,7 @@
-# Project Brief: Chronicle OS – The Newsroom Operating System
+# Project Brief: Today Morning News – The Newsroom Operating System
 
 ## 1. Project Overview
-**Chronicle OS** is a specialized newsroom operating system designed for business-focused newspapers. Unlike standard content management systems, Chronicle OS is built as an enterprise SaaS platform that prioritizes editorial efficiency, real-time data visualization, and monetization control. It bridges the gap between news creation (Journalists/Editors) and business operations (Marketing/Ad Managers).
+**Today Morning News** is a specialized newsroom operating system designed for business-focused newspapers. Unlike standard content management systems, Today Morning News is built as an enterprise SaaS platform that prioritizes editorial efficiency, real-time data visualization, and monetization control. It bridges the gap between news creation (Journalists/Editors) and business operations (Marketing/Ad Managers).
 
 ---
 

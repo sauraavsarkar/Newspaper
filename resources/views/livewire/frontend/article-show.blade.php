@@ -72,7 +72,7 @@
         <div class="text-center md:text-left">
             <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Written by {{ $article->author?->name ?? 'Unknown Author' }}</h3>
             <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
-                {{ $article->author?->name }} is a contributor to Chronicle OS. They cover breaking news, in-depth analysis, and engaging stories across various topics.
+                {{ $article->author?->name }} is a contributor to Today Morning News. They cover breaking news, in-depth analysis, and engaging stories across various topics.
             </p>
             <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold text-sm inline-flex items-center gap-1 transition-colors">
                 View all stories <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>

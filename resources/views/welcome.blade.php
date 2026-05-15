@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Chronicle OS | Next-Gen Editorial</title>
+        <title>Today Morning News | Next-Gen Editorial</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -27,7 +27,7 @@
                     <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     </div>
-                    <span class="font-black text-xl tracking-tight text-white">Chronicle OS</span>
+                    <span class="font-black text-xl tracking-tight text-white">Today Morning News</span>
                 </div>
                 
                 <div class="flex items-center gap-4">
@@ -58,7 +58,7 @@
                 </h1>
                 
                 <p class="mt-4 text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed mb-12">
-                    Chronicle OS is the premium command center for modern newsrooms. Manage stories, collaborate in real-time, and publish at the speed of news.
+                    Today Morning News is the premium command center for modern newsrooms. Manage stories, collaborate in real-time, and publish at the speed of news.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -126,7 +126,7 @@
         </main>
 
         <footer class="border-t border-white/5 py-12 relative z-10 text-center">
-            <p class="text-zinc-500 text-sm">© {{ date('Y') }} Chronicle OS by NewsFlow. All rights reserved.</p>
+            <p class="text-zinc-500 text-sm">© {{ date('Y') }} Today Morning News. All rights reserved.</p>
         </footer>
     </body>
 </html>

@@ -79,16 +79,13 @@ class AnalyticsDashboard extends Component
         $categoryStats = Category::withCount(['articles as published_count' => function ($q) {
                 $q->where('status', 'published');
             }])
-            ->get()
-            ->map(function ($category) use ($startDate) {
-                $articleIds = $category->articles()->pluck('id');
-                $category->view_count = ArticleView::whereIn('article_id', $articleIds)
-                    ->where('viewed_at', '>=', $startDate)
-                    ->count();
-                return $category;
-            })
-            ->sortByDesc('view_count')
-            ->take(8);
+            ->withCount(['articles as view_count' => function ($q) use ($startDate) {
+                $q->join('article_views', 'articles.id', '=', 'article_views.article_id')
+                  ->where('article_views.viewed_at', '>=', $startDate);
+            }])
+            ->orderByDesc('view_count')
+            ->take(8)
+            ->get();
 
         $categoryLabels = $categoryStats->pluck('name')->values()->toArray();
         $categoryData = $categoryStats->pluck('view_count')->values()->toArray();
@@ -100,16 +97,13 @@ class AnalyticsDashboard extends Component
             ->withCount(['articles as published_count' => function ($q) {
                 $q->where('status', 'published');
             }])
-            ->get()
-            ->map(function ($author) use ($startDate) {
-                $articleIds = Article::where('user_id', $author->id)->pluck('id');
-                $author->view_count = ArticleView::whereIn('article_id', $articleIds)
-                    ->where('viewed_at', '>=', $startDate)
-                    ->count();
-                return $author;
-            })
-            ->sortByDesc('view_count')
-            ->take(5);
+            ->withCount(['articles as view_count' => function ($q) use ($startDate) {
+                $q->join('article_views', 'articles.id', '=', 'article_views.article_id')
+                  ->where('article_views.viewed_at', '>=', $startDate);
+            }])
+            ->orderByDesc('view_count')
+            ->take(5)
+            ->get();
 
         // === Hourly Distribution ===
         $hourlyViews = ArticleView::where('viewed_at', '>=', $startDate)
@@ -127,26 +121,25 @@ class AnalyticsDashboard extends Component
         }
 
         // === Device Breakdown ===
-        $views = ArticleView::where('viewed_at', '>=', $startDate)->get();
-        $deviceStats = [
-            'Mobile' => 0,
-            'Tablet' => 0,
-            'Desktop' => 0,
+        $deviceRaw = ArticleView::where('viewed_at', '>=', $startDate)
+            ->select(DB::raw("
+                CASE 
+                    WHEN user_agent LIKE '%tablet%' OR user_agent LIKE '%ipad%' OR user_agent LIKE '%playbook%' THEN 'Tablet'
+                    WHEN user_agent LIKE '%mobile%' OR user_agent LIKE '%iphone%' OR user_agent LIKE '%android%' THEN 'Mobile'
+                    ELSE 'Desktop'
+                END as device_type,
+                COUNT(*) as count
+            "))
+            ->groupBy('device_type')
+            ->pluck('count', 'device_type')
+            ->toArray();
+
+        $deviceLabels = ['Mobile', 'Tablet', 'Desktop'];
+        $deviceData = [
+            $deviceRaw['Mobile'] ?? 0,
+            $deviceRaw['Tablet'] ?? 0,
+            $deviceRaw['Desktop'] ?? 0,
         ];
-
-        foreach ($views as $view) {
-            $ua = strtolower($view->user_agent);
-            if (str_contains($ua, 'tablet') || str_contains($ua, 'ipad') || str_contains($ua, 'playbook')) {
-                $deviceStats['Tablet']++;
-            } elseif (str_contains($ua, 'mobile') || str_contains($ua, 'iphone') || str_contains($ua, 'android')) {
-                $deviceStats['Mobile']++;
-            } else {
-                $deviceStats['Desktop']++;
-            }
-        }
-
-        $deviceLabels = array_keys($deviceStats);
-        $deviceData = array_values($deviceStats);
 
         // === Recent Views (live feed) ===
         $recentViews = ArticleView::with(['article.author', 'article.category', 'user'])

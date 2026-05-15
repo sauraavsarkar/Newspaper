@@ -1,71 +1,96 @@
-<div class="py-6 space-y-8" 
-     x-data="{ 
+<div class="py-6 space-y-8" x-data="{ 
         view: @entangle('isModalOpen').live ? 'editor' : 'registry',
         sidebarOpen: true,
         isMobile: window.innerWidth < 1024
-     }"
-     x-init="window.addEventListener('resize', () => isMobile = window.innerWidth < 1024)">
-    
+     }" x-init="window.addEventListener('resize', () => isMobile = window.innerWidth < 1024)">
+
     @push('styles')
-    <style>
-        /* CKEditor Custom Minimalist Style for Dark Mode */
-        .ck-editor__editable_inline { 
-            min-height: 50vh; 
-            border: none !important; 
-            padding: 0 !important; 
-            font-size: 1.15rem !important; 
-            line-height: 1.9 !important; 
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        .dark .ck-editor__editable_inline {
-            color: #f4f4f5 !important;
-        }
-        .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) { background-color: transparent !important; }
-        .ck.ck-toolbar { 
-            border: none !important; 
-            padding: 0.5rem 0 !important; 
-            margin-bottom: 2.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .ck.ck-button { border-radius: 8px !important; }
-        .ck.ck-editor { border: none !important; }
-        
-        .dark .ck.ck-toolbar {
-            background: rgba(24, 24, 27, 0.9) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-        }
-        .dark .ck.ck-button {
-            color: #a1a1aa !important;
-        }
-        .dark .ck.ck-button:hover, .dark .ck.ck-button.ck-on {
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: #f4f4f5 !important;
-        }
-        .dark .ck.ck-tooltip__text { background: #27272a !important; color: #f4f4f5 !important; }
-    </style>
+        <style>
+            /* CKEditor Custom Minimalist Style for Dark Mode */
+            .ck-editor__editable_inline {
+                min-height: 50vh;
+                border: none !important;
+                padding: 0 !important;
+                font-size: 1.15rem !important;
+                line-height: 1.9 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+            }
+
+            .dark .ck-editor__editable_inline {
+                color: #f4f4f5 !important;
+            }
+
+            .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+                background-color: transparent !important;
+            }
+
+            .ck.ck-toolbar {
+                border: none !important;
+                padding: 0.5rem 0 !important;
+                margin-bottom: 2.5rem;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .ck.ck-button {
+                border-radius: 8px !important;
+            }
+
+            .ck.ck-editor {
+                border: none !important;
+            }
+
+            .dark .ck.ck-toolbar {
+                background: rgba(24, 24, 27, 0.9) !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+
+            .dark .ck.ck-button {
+                color: #a1a1aa !important;
+            }
+
+            .dark .ck.ck-button:hover,
+            .dark .ck.ck-button.ck-on {
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: #f4f4f5 !important;
+            }
+
+            .dark .ck.ck-tooltip__text {
+                background: #27272a !important;
+                color: #f4f4f5 !important;
+            }
+        </style>
     @endpush
 
     <!-- Registry View (Responsive Table/Cards) -->
     @if(!$isModalOpen)
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-                <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
+                <h1
+                    class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
                     Story Journal
                 </h1>
                 <p class="text-zinc-500 dark:text-zinc-400 mt-2 font-medium">Manage and curate your editorial pipeline.</p>
             </div>
             <div class="flex items-center gap-4 w-full md:w-auto">
                 <div class="relative w-full md:w-96 group">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span
+                        class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-400 dark:text-zinc-500 group-focus-within:text-indigo-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </span>
-                    <input type="text" wire:model.live="searchTerm" placeholder="Search archive..." class="w-full bg-white/70 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                    <input type="text" wire:model.live="searchTerm" placeholder="Search archive..."
+                        class="w-full bg-white/70 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
                 </div>
-                <button wire:click="create" class="shrink-0 flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                <button wire:click="create"
+                    class="shrink-0 flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                    </svg>
                     <span class="hidden xs:inline">Draft Story</span>
                 </button>
             </div>
@@ -76,10 +101,18 @@
             <table class="w-full text-left">
                 <thead>
                     <tr class="border-b border-zinc-200 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50">
-                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Story Details</th>
-                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Category</th>
-                        <th class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-5 text-right text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Actions</th>
+                        <th
+                            class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                            Story Details</th>
+                        <th
+                            class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                            Category</th>
+                        <th
+                            class="px-8 py-5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                            Status</th>
+                        <th
+                            class="px-8 py-5 text-right text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-white/5">
@@ -87,115 +120,116 @@
                         <tr class="group hover:bg-zinc-100/50 dark:hover:bg-indigo-500/10 transition-colors duration-300">
                             <td class="px-8 py-6">
                                 <div class="flex items-center gap-5">
-                                    <div class="h-16 w-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 overflow-hidden shrink-0 border border-zinc-200 dark:border-white/5">
+                                    <div
+                                        class="h-16 w-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 overflow-hidden shrink-0 border border-zinc-200 dark:border-white/5">
                                         @if($article->featured_image)
                                             <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-full w-full object-cover">
                                         @else
-                                            <div class="h-full w-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                    <div class="h-full w-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                    </div>
+                                                @endif
                                             </div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <button wire:click="edit({{ $article->id }})" class="text-lg font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-left">{{ $article->title }}</button>
-                                        <div class="flex items-center gap-3 mt-1.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
-                                            <span>{{ $article->author->name }}</span>
-                                            <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600"></span>
-                                            <span>{{ $article->created_at->format('M d, Y') }}</span>
+                                            <div>
+                                                <button wire:click="edit({{ $article->id }})" class="text-lg font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-left">{{ $article->title }}</button>
+                                                <div class="flex items-center gap-3 mt-1.5 text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">
+                                                    <span>{{ $article->author->name }}</span>
+                                                    <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600"></span>
+                                                    <span>{{ $article->created_at->format('M d, Y') }}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-8 py-6">
-                                <span class="inline-flex px-3 py-1 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-white/5 text-[10px] font-bold uppercase rounded-lg">
-                                    {{ $article->category->name }}
-                                </span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full 
-                                        {{ $article->status === 'published' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : '' }}
-                                        {{ $article->status === 'pending' ? 'bg-indigo-500' : '' }}
-                                        {{ $article->status === 'draft' ? 'bg-zinc-400 dark:bg-zinc-600' : '' }}
-                                        {{ $article->status === 'scheduled' ? 'bg-amber-500' : '' }}
-                                        {{ $article->status === 'rejected' ? 'bg-rose-500' : '' }}
-                                    "></div>
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
-                                </div>
-                            </td>
-                            <td class="px-8 py-6 text-right">
-                                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button wire:click="edit({{ $article->id }})" class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    </button>
-                                    <button wire:click="delete({{ $article->id }})" 
-                                            onclick="confirm('Move this story to trash?') || event.stopImmediatePropagation()"
-                                            class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500 transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <span class="inline-flex px-3 py-1 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-white/5 text-[10px] font-bold uppercase rounded-lg">
+                                            {{ $article->category->name }}
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 rounded-full 
+                                                {{ $article->status === 'published' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : '' }}
+                                                {{ $article->status === 'pending' ? 'bg-indigo-500' : '' }}
+                                                {{ $article->status === 'draft' ? 'bg-zinc-400 dark:bg-zinc-600' : '' }}
+                                                {{ $article->status === 'scheduled' ? 'bg-amber-500' : '' }}
+                                                {{ $article->status === 'rejected' ? 'bg-rose-500' : '' }}
+                                            "></div>
+                                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6 text-right">
+                                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button wire:click="edit({{ $article->id }})" class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 transition-all shadow-sm">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                            </button>
+                                            <button wire:click="delete({{ $article->id }})" 
+                                                    onclick="confirm('Move this story to trash?') || event.stopImmediatePropagation()"
+                                                    class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 text-zinc-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500 transition-all shadow-sm">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                     @empty
-                        <tr>
-                            <td colspan="4" class="px-8 py-20 text-center">
-                                <p class="text-sm font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">No manuscripts found</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            @if($articles->hasPages())
-                <div class="px-8 py-6 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-white/5">
+                            <tr>
+                                <td colspan="4" class="px-8 py-20 text-center">
+                                    <p class="text-sm font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">No manuscripts found</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+                @if($articles->hasPages())
+                    <div class="px-8 py-6 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-white/5">
+                        {{ $articles->links() }}
+                    </div>
+                @endif
+            </div>
+
+            <!-- Mobile View (Cards) -->
+            <div class="lg:hidden space-y-4">
+                @forelse ($articles as $article)
+                    <div class="glass-card p-5 rounded-3xl border border-zinc-200 dark:border-white/5 space-y-4">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="h-14 w-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 shrink-0 border border-zinc-200 dark:border-white/5 overflow-hidden">
+                                    @if($article->featured_image)
+                                        <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-full w-full object-cover">
+                                    @endif
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2">{{ $article->title }}</h4>
+                                    <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">{{ $article->created_at->format('M d, Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button wire:click="edit({{ $article->id }})" class="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-white/5">
+                            <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 text-[9px] font-black uppercase rounded">{{ $article->category->name }}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full {{ $article->status === 'published' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600' }}"></div>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-12 text-center glass-card rounded-3xl">
+                        <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">Draft list empty</p>
+                    </div>
+                @endforelse
+                <div class="mt-4">
                     {{ $articles->links() }}
                 </div>
-            @endif
-        </div>
-
-        <!-- Mobile View (Cards) -->
-        <div class="lg:hidden space-y-4">
-            @forelse ($articles as $article)
-                <div class="glass-card p-5 rounded-3xl border border-zinc-200 dark:border-white/5 space-y-4">
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="h-14 w-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800/50 shrink-0 border border-zinc-200 dark:border-white/5 overflow-hidden">
-                                @if($article->featured_image)
-                                    <img src="{{ asset('storage/' . $article->featured_image) }}" class="h-full w-full object-cover">
-                                @endif
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2">{{ $article->title }}</h4>
-                                <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">{{ $article->created_at->format('M d, Y') }}</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <button wire:click="edit({{ $article->id }})" class="p-2 text-zinc-400 dark:text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-white/5">
-                        <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-300 text-[9px] font-black uppercase rounded">{{ $article->category->name }}</span>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full {{ $article->status === 'published' ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600' }}"></div>
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $article->status }}</span>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="p-12 text-center glass-card rounded-3xl">
-                    <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">Draft list empty</p>
-                </div>
-            @endforelse
-            <div class="mt-4">
-                {{ $articles->links() }}
             </div>
-        </div>
 
     @else
         <!-- Editor View (Modern Layout) -->
         <div class="glass-card rounded-[2rem] overflow-hidden flex flex-col lg:flex-row h-[calc(100vh-140px)] border border-zinc-200 dark:border-white/5 shadow-2xl relative z-10">
-            
+
             <button wire:click="$set('isModalOpen', false)" class="absolute top-6 right-6 lg:left-6 lg:right-auto z-20 p-2 rounded-full bg-white/50 dark:bg-zinc-900/50 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white backdrop-blur-md transition-colors border border-zinc-200 dark:border-white/10 shadow-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </button>
@@ -211,7 +245,7 @@
                             placeholder="A compelling headline..." 
                             class="w-full bg-transparent border-none focus:ring-0 text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white placeholder-zinc-300 dark:placeholder-zinc-700 resize-none p-0 leading-tight"
                         ></textarea>
-                        
+
                         <div class="flex flex-wrap items-center gap-6 py-6 border-y border-zinc-200 dark:border-white/5">
                             <div class="space-y-1">
                                 <label class="text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Editorial Category</label>
@@ -265,9 +299,9 @@
                    x-transition:enter="transition ease-out duration-300"
                    x-transition:enter-start="translate-x-full"
                    x-transition:enter-end="translate-x-0">
-                
+
                 <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-12">
-                    
+
                     <!-- Feature Image / Media Frame -->
                     <div class="group">
                         <div class="flex items-center justify-between mb-4">
@@ -307,7 +341,7 @@
                                 <span class="text-[9px] font-black uppercase text-zinc-600 dark:text-zinc-400 tracking-tighter">{{ $status }}</span>
                             </div>
                         </div>
-                        
+
                         <div class="bg-white/50 dark:bg-zinc-950/50 p-1.5 rounded-[1.5rem] flex flex-col gap-1 border border-zinc-200 dark:border-white/5">
                             @foreach(['draft' => 'Draft Manuscript', 'pending' => 'Editorial Review', 'published' => 'Public Release', 'scheduled' => 'Future Launch'] as $val => $label)
                                 <button 
@@ -338,10 +372,10 @@
                                 <span class="text-[10px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-widest block">Featured Story</span>
                                 <span class="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 block">Highlight on main gateway</span>
                             </div>
-                            <div class="relative inline-flex items-center cursor-pointer">
+                            <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model="is_featured" class="sr-only peer">
                                 <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-500"></div>
-                            </div>
+                            </label>
                         </div>
 
                         <div class="flex items-center justify-between p-6 bg-white/50 dark:bg-zinc-950/50 rounded-3xl border border-zinc-200 dark:border-white/5 shadow-sm">
@@ -349,10 +383,10 @@
                                 <span class="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest block">Breaking News</span>
                                 <span class="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 block">Push to live ticker</span>
                             </div>
-                            <div class="relative inline-flex items-center cursor-pointer">
+                            <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" wire:model="is_breaking" class="sr-only peer">
                                 <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600 dark:peer-checked:bg-rose-500"></div>
-                            </div>
+                            </label>
                         </div>
                     </div>
 
@@ -407,7 +441,7 @@
                             </button>
                         </div>
                     @endif
-                    
+
                     <button wire:click="save" class="w-full py-5 bg-indigo-600 text-white text-xs font-black uppercase tracking-[0.2em] rounded-[1.5rem] hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-500/30 flex items-center justify-center gap-3 group">
                         <span>Commit to Registry</span>
                         <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>

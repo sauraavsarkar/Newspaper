@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Chronicle OS') }}</title>
+    <title>{{ config('app.name', 'Today Morning News') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -102,9 +102,11 @@
                         <div
                             class="px-4 py-3 border-b border-zinc-100 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900/50">
                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
-                                {{ auth()->user()->name ?? 'User' }}</p>
+                                {{ auth()->user()->name ?? 'User' }}
+                            </p>
                             <p class="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                                {{ auth()->user()->email ?? '' }}</p>
+                                {{ auth()->user()->email ?? '' }}
+                            </p>
                         </div>
 
                         <div class="py-1">

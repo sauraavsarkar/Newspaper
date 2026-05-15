@@ -109,9 +109,9 @@ class Article extends Model
     }
 
     /**
-     * Get all time views count (legacy getter).
+     * Get all time views count.
      */
-    public function getViewsTotalAttribute(): int
+    public function getTotalViewsAttribute(): int
     {
         return $this->views()->count();
     }

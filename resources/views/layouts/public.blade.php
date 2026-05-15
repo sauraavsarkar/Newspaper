@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ $title ?? 'Chronicle OS' }} | Next-Gen Editorial</title>
+        <title>{{ $title ?? config('app.name', 'Today Morning News') }} | Morning Updates</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700,800,900&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -21,16 +21,16 @@
         x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', val); document.documentElement.classList.toggle('dark', val); })">
         
         <!-- Navigation -->
-        <nav class="sticky top-0 z-50 glass-card border-x-0 border-t-0 border-zinc-200 dark:border-white/5 py-4">
+        <nav class="sticky top-0 z-50 glass-card border-x-0 border-t-0 border-zinc-200 dark:border-white/5 py-4" x-data="{ mobileMenuOpen: false }">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group cursor-pointer">
                     <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     </div>
-                    <span class="font-black text-xl tracking-tight text-zinc-900 dark:text-white">Chronicle</span>
+                    <span class="font-black text-xl tracking-tight text-zinc-900 dark:text-white">Today Morning</span>
                 </a>
                 
-                <div class="flex items-center gap-6">
+                <div class="hidden md:flex items-center gap-6">
                     <!-- Dark Mode Toggle -->
                     <button @click="darkMode = !darkMode" class="p-2 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
@@ -46,6 +46,29 @@
                         @endauth
                     @endif
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-4">
+                    <button @click="darkMode = !darkMode" class="p-2 rounded-full text-zinc-500">
+                        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenuOpen" x-collapse x-cloak class="md:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-white/5 py-4 px-6 space-y-4 shadow-xl">
+                <a href="{{ route('home') }}" class="block text-base font-semibold text-zinc-600 dark:text-zinc-300 hover:text-indigo-500 transition-colors">Home</a>
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="block text-base font-semibold text-zinc-600 dark:text-zinc-300 hover:text-indigo-500 transition-colors">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="block text-base font-semibold text-zinc-600 dark:text-zinc-300 hover:text-indigo-500 transition-colors">Log in</a>
+                    @endauth
+                @endif
             </div>
         </nav>
 
@@ -63,7 +86,7 @@
                                 {{ $article->title }}
                             </a>
                         @empty
-                            <span>Welcome to Chronicle OS. The next generation editorial engine is now live. Stay tuned for updates.</span>
+                            <span>Welcome to Today Morning News. Your source for daily updates. Stay tuned.</span>
                         @endforelse
                     </div>
                 </div>
@@ -81,7 +104,7 @@
                         <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                         </div>
-                        <span class="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Chronicle OS</span>
+                        <span class="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Today Morning News</span>
                     </div>
                     <p class="text-zinc-500 text-sm">© {{ date('Y') }} NewsFlow. All rights reserved.</p>
                 </div>
