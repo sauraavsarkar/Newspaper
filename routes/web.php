@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
-
 use App\Livewire\Admin\Categories\CategoryManager;
 use App\Livewire\Admin\Articles\ArticleManager;
+use App\Livewire\Frontend\Home;
+use App\Livewire\Frontend\ArticleShow;
+
+Route::get('/', Home::class)->name('home');
+Route::get('/article/{slug}', ArticleShow::class)->name('article.show');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
