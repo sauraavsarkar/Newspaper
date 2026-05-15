@@ -7,12 +7,12 @@
         </a>
         @endif
         
-        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tight">
+        <h1 class="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-6 leading-tight tracking-tight">
             {{ $article->title }}
         </h1>
         
         @if($article->excerpt)
-        <p class="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto mb-8 font-light leading-relaxed">
+        <p class="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto mb-8 font-light leading-relaxed">
             {{ $article->excerpt }}
         </p>
         @endif
@@ -23,12 +23,12 @@
                     {{ substr($article->author?->name ?? 'A', 0, 1) }}
                 </div>
                 <div class="text-left">
-                    <p class="text-sm font-bold text-zinc-200">{{ $article->author?->name ?? 'Unknown Author' }}</p>
+                    <p class="text-sm font-bold text-zinc-800 dark:text-zinc-200">{{ $article->author?->name ?? 'Unknown Author' }}</p>
                     <p class="text-xs text-zinc-500">{{ $article->published_at?->format('F j, Y') ?? 'Unpublished' }}</p>
                 </div>
             </div>
             
-            <div class="w-px h-10 bg-white/10"></div>
+            <div class="w-px h-10 bg-zinc-300 dark:bg-white/10"></div>
             
             <div class="flex gap-2">
                 <button class="p-2 rounded-full glass-card hover:bg-white/10 text-zinc-400 hover:text-indigo-400 transition-colors">
@@ -43,21 +43,21 @@
 
     <!-- Featured Image -->
     @if($article->featured_image)
-    <div class="mb-16 rounded-[2rem] overflow-hidden relative shadow-2xl shadow-indigo-500/10 ring-1 ring-white/10">
+    <div class="mb-16 rounded-[2rem] overflow-hidden relative shadow-2xl shadow-indigo-500/10 ring-1 ring-zinc-200 dark:ring-white/10">
         <img src="{{ Storage::url($article->featured_image) }}" alt="{{ $article->title }}" class="w-full h-auto max-h-[600px] object-cover">
     </div>
     @endif
 
     <!-- Article Content -->
-    <div class="prose prose-invert prose-lg max-w-none prose-p:text-zinc-300 prose-headings:text-white prose-a:text-indigo-400 hover:prose-a:text-indigo-300 prose-strong:text-white prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-500/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-img:rounded-xl">
+    <div class="prose dark:prose-invert prose-lg max-w-none prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-headings:text-zinc-900 dark:prose-headings:text-white prose-a:text-indigo-500 dark:prose-a:text-indigo-400 hover:prose-a:text-indigo-400 dark:hover:prose-a:text-indigo-300 prose-strong:text-zinc-900 dark:prose-strong:text-white prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-500/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-img:rounded-xl">
         {!! $article->content !!}
     </div>
 
     <!-- Tags -->
     @if($article->tags && $article->tags->count() > 0)
-    <div class="mt-16 pt-8 border-t border-white/10 flex flex-wrap gap-2">
+    <div class="mt-16 pt-8 border-t border-zinc-200 dark:border-white/10 flex flex-wrap gap-2">
         @foreach($article->tags as $tag)
-        <a href="#" class="px-3 py-1 bg-zinc-900 border border-white/10 rounded-lg text-sm text-zinc-400 hover:text-white hover:border-indigo-500/50 transition-colors">
+        <a href="#" class="px-3 py-1 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-indigo-500/50 transition-colors">
             #{{ $tag->name }}
         </a>
         @endforeach
@@ -65,13 +65,13 @@
     @endif
 
     <!-- Author Bio -->
-    <div class="mt-16 glass-card rounded-2xl p-8 border border-white/5 flex flex-col md:flex-row gap-6 items-center md:items-start">
+    <div class="mt-16 glass-card rounded-2xl p-8 border border-zinc-200 dark:border-white/5 flex flex-col md:flex-row gap-6 items-center md:items-start">
         <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0">
             {{ substr($article->author?->name ?? 'A', 0, 1) }}
         </div>
         <div class="text-center md:text-left">
-            <h3 class="text-xl font-bold text-white mb-2">Written by {{ $article->author?->name ?? 'Unknown Author' }}</h3>
-            <p class="text-zinc-400 leading-relaxed mb-4">
+            <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Written by {{ $article->author?->name ?? 'Unknown Author' }}</h3>
+            <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
                 {{ $article->author?->name }} is a contributor to Chronicle OS. They cover breaking news, in-depth analysis, and engaging stories across various topics.
             </p>
             <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold text-sm inline-flex items-center gap-1 transition-colors">
