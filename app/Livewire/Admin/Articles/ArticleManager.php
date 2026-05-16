@@ -5,6 +5,10 @@ namespace App\Livewire\Admin\Articles;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Notifications\ArticleStatusNotification;
+use App\Notifications\EditorialNotification;
+use App\Notifications\SystemAlertNotification;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -35,6 +39,7 @@ class ArticleManager extends Component
     public $isModalOpen = false;
     public $searchTerm = '';
     public $remark = ''; // For editorial feedback
+    public $editor_id = ''; // Assigned editor
 
     protected $rules = [
         'title' => 'required|min:5',
@@ -86,6 +91,7 @@ class ArticleManager extends Component
         $this->is_breaking = $article->is_breaking;
         $this->published_at = $article->published_at ? $article->published_at->format('Y-m-d\TH:i') : '';
         $this->selectedTags = $article->tags->pluck('id')->toArray();
+        $this->editor_id = $article->editor_id;
         $this->remark = '';
         $this->isModalOpen = true;
     }
@@ -129,6 +135,7 @@ class ArticleManager extends Component
             'status' => $this->status,
             'is_featured' => $this->is_featured,
             'is_breaking' => $this->is_breaking,
+            'editor_id' => $this->editor_id ?: null,
         ];
 
         if (!$this->editingArticleId) {
@@ -149,23 +156,87 @@ class ArticleManager extends Component
 
         if ($this->editingArticleId) {
             $article = Article::find($this->editingArticleId);
+            $wasBreaking = $article->is_breaking;
             $article->update($data);
+            
+            // Check for Breaking News Toggle
+            if (!$wasBreaking && $article->is_breaking) {
+                // Notify Editors
+                $editors = User::role(['Editor', 'Admin'])->get();
+                \Illuminate\Support\Facades\Notification::send($editors, new EditorialNotification('breaking_toggled', $article, auth()->user()));
+
+                // Notify Readers (Breaking News Alert)
+                $readers = User::role('Reader')->get();
+                \Illuminate\Support\Facades\Notification::send($readers, new ReaderAlertNotification('breaking_news', [
+                    'title' => $article->title,
+                    'url' => route('article.show', $article->slug)
+                ]));
+            }
+
+            // Check for Editor Assignment
+            if ($this->editor_id && $article->wasChanged('editor_id')) {
+                $editor = User::find($this->editor_id);
+                if ($editor) {
+                    $editor->notify(new EditorialNotification('assigned', $article, auth()->user()));
+                }
+            }
+
+            // Check for Resubmission
+            if (in_array($article->getOriginal('status'), ['rejected', 'revision']) && $article->status === 'submitted') {
+                $article->update(['resubmitted_at' => now()]);
+                
+                if ($article->editor) {
+                    $article->editor->notify(new EditorialNotification('resubmitted', $article, auth()->user()));
+                } else {
+                    $editors = User::role(['Editor', 'Admin'])->get();
+                    \Illuminate\Support\Facades\Notification::send($editors, new EditorialNotification('resubmitted', $article, auth()->user()));
+                }
+            }
+
             $article->tags()->sync($this->selectedTags);
             session()->flash('message', 'Article updated successfully.');
         } else {
             $article = Article::create($data);
+            
+            // If new article is marked as breaking
+            if ($article->is_breaking) {
+                $readers = User::role('Reader')->get();
+                \Illuminate\Support\Facades\Notification::send($readers, new ReaderAlertNotification('breaking_news', [
+                    'title' => $article->title,
+                    'url' => route('article.show', $article->slug)
+                ]));
+            }
+
             $article->tags()->attach($this->selectedTags);
             Log::info("ArticleManager: Article created successfully. ID: {$article->id}");
             session()->flash('message', 'Article created successfully.');
         }
 
         $this->isModalOpen = false;
+
+        // Notify Admin if it's the journalist's first article
+        if (!$this->editingArticleId) {
+            $count = auth()->user()->articles()->count();
+            if ($count === 1) {
+                $admins = User::role('Admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new SystemAlertNotification('first_article', [
+                    'journalist_name' => auth()->user()->name,
+                    'article_title' => $article->title,
+                    'url' => route('article.show', $article->slug)
+                ]));
+            }
+        }
     }
 
     public function submitForReview()
     {
         $this->status = 'submitted';
         $this->save();
+        
+        $article = Article::find($this->editingArticleId);
+        $editors = User::role(['Editor', 'Admin'])->get();
+        \Illuminate\Support\Facades\Notification::send($editors, new EditorialNotification('submitted', $article, auth()->user()));
+
         session()->flash('message', 'Article submitted for review.');
     }
 
@@ -177,6 +248,11 @@ class ArticleManager extends Component
         }
         $this->status = 'published';
         $this->save();
+
+        $article = Article::find($this->editingArticleId);
+        $article->author->notify(new ArticleStatusNotification($article, 'approved'));
+        $article->author->notify(new ArticleStatusNotification($article, 'published'));
+
         session()->flash('message', 'Article approved and published.');
     }
 
@@ -197,6 +273,8 @@ class ArticleManager extends Component
             'user_id' => auth()->id(),
             'remark' => $this->remark
         ]);
+
+        $article->author->notify(new ArticleStatusNotification($article, 'rejected', $this->remark));
 
         $this->isModalOpen = false;
         session()->flash('message', 'Article rejected with feedback.');
@@ -241,6 +319,7 @@ class ArticleManager extends Component
             'categories' => Category::where('is_active', true)->get(),
             'tags' => Tag::all(),
             'remarks' => $editorialRemarks,
+            'editors' => User::role(['Editor', 'Admin'])->get(),
         ]);
     }
 }

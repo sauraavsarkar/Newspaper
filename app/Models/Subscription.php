@@ -12,6 +12,17 @@ use Spatie\Activitylog\LogOptions;
 class Subscription extends Model
 {
     use HasFactory, LogsActivity;
+    
+    protected static function booted()
+    {
+        static::created(function ($subscription) {
+            $admins = User::role('Admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification('new_subscription', [
+                'user_name' => $subscription->user ? $subscription->user->name : 'Unknown User',
+                'plan' => $subscription->plan,
+            ]));
+        });
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

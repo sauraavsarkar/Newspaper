@@ -49,6 +49,9 @@
             </div>
 
             <div class="flex items-center gap-4">
+                <!-- Notification Bell -->
+                <livewire:admin.notifications.notification-bell />
+
                 <!-- Dark Mode Toggle -->
                 <button @click="darkMode = !darkMode"
                     class="p-2 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">

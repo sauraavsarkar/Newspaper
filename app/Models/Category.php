@@ -21,4 +21,10 @@ class Category extends Model
     {
         return $this->hasMany(Article::class);
     }
+
+    public function followers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'category_user')
+            ->withTimestamps();
+    }
 }

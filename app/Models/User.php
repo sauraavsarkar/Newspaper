@@ -76,6 +76,22 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            // Delay notification slightly to ensure roles are assigned if using a seeder/flow
+            // Or just check for admins and send
+            $admins = self::role('Admin')->get();
+            if ($admins->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification('new_user', [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'url' => route('admin.users.edit', $user->id)
+                ]));
+            }
+        });
+    }
+
     /**
      * Get articles written by this user.
      */

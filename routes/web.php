@@ -34,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/users', UserManager::class)->name('admin.users');
     Route::get('admin/users/{user}/edit', \App\Livewire\Profile\ProfileEditor::class)->name('admin.users.edit');
     Route::get('admin/activity', \App\Livewire\Admin\ActivityFeed::class)->name('admin.activity');
+    Route::get('admin/notifications', \App\Livewire\Admin\Notifications\NotificationCenter::class)->name('admin.notifications');
 });
 
 Route::middleware(['auth'])->group(function () {

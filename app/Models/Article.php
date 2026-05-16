@@ -36,10 +36,13 @@ class Article extends Model
         'is_featured',
         'is_breaking',
         'published_at',
+        'editor_id',
+        'resubmitted_at',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'resubmitted_at' => 'datetime',
         'is_featured' => 'boolean',
         'is_breaking' => 'boolean',
     ];
@@ -47,6 +50,11 @@ class Article extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'editor_id');
     }
 
     public function category(): BelongsTo
@@ -120,6 +128,14 @@ class Article extends Model
             'viewed_at' => now(),
         ]);
 
+        // Trending notification (e.g., at 10, 50, 100 views for testing, can be adjusted)
+        $totalViews = $this->views()->count();
+        if (in_array($totalViews, [10, 50, 100, 500, 1000])) {
+            if ($this->author) {
+                $this->author->notify(new \App\Notifications\ArticleEngagementNotification('trending', $this));
+            }
+        }
+
         return true;
     }
 
@@ -167,6 +183,26 @@ class Article extends Model
 
     protected static function booted()
     {
+        static::updated(function ($article) {
+            // Notify category followers when published
+            if ($article->wasChanged('status') && $article->status === 'published') {
+                if ($article->category) {
+                    $followers = $article->category->followers;
+                    foreach ($followers as $user) {
+                        // Skip author
+                        if ($user->id === $article->user_id) continue;
+                        
+                        $user->notify(new \App\Notifications\ReaderAlertNotification('new_article', [
+                            'article_id' => $article->id,
+                            'article_title' => $article->title,
+                            'category_name' => $article->category->name,
+                            'url' => route('article.show', $article->slug)
+                        ]));
+                    }
+                }
+            }
+        });
+
         static::deleting(function ($article) {
             // Cleanup physical image file
             if ($article->featured_image) {

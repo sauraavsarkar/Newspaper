@@ -27,6 +27,61 @@ class Comment extends Model
         'body',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($comment) {
+            // Notify article author
+            if ($comment->article && $comment->article->author && $comment->user_id !== $comment->article->user_id) {
+                $comment->article->author->notify(new \App\Notifications\ArticleEngagementNotification(
+                    'comment',
+                    $comment->article,
+                    $comment->user,
+                    ['comment_id' => $comment->id]
+                ));
+            }
+
+            // Notify parent comment author (Reply)
+            if ($comment->parent && $comment->parent->user && $comment->user_id !== $comment->parent->user_id) {
+                $comment->parent->user->notify(new \App\Notifications\ArticleEngagementNotification(
+                    'reply',
+                    $comment->article,
+                    $comment->user,
+                    ['comment_id' => $comment->id, 'parent_id' => $comment->parent_id]
+                ));
+                
+                // Also notify reader via ReaderAlertNotification
+                $comment->parent->user->notify(new \App\Notifications\ReaderAlertNotification(
+                    'reply',
+                    [
+                        'comment_id' => $comment->id,
+                        'article_title' => $comment->article->title,
+                        'url' => route('article.show', $comment->article->slug)
+                    ],
+                    $comment->user
+                ));
+            }
+
+            // Spam Check
+            if ($comment->isSpam()) {
+                $moderators = User::role(['Moderator', 'Admin'])->get();
+                \Illuminate\Support\Facades\Notification::send($moderators, new \App\Notifications\SystemAlertNotification('spam_flag', [
+                    'comment_id' => $comment->id,
+                    'user_name' => $comment->user ? $comment->user->name : 'Guest',
+                    'body' => \Illuminate\Support\Str::limit($comment->body, 50),
+                ]));
+            }
+        });
+    }
+
+    public function isSpam(): bool
+    {
+        $spammy = ['win free', 'click here', 'buy now', 'cheap', 'viagra', 'casino'];
+        foreach ($spammy as $word) {
+            if (stripos($this->body, $word) !== false) return true;
+        }
+        return false;
+    }
+
     public function article()
     {
         return $this->belongsTo(Article::class);

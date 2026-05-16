@@ -429,6 +429,19 @@
                         </div>
                     </div>
 
+                    <!-- Editor Assignment (Admin Only) -->
+                    @can('publish article')
+                        <div class="space-y-6">
+                            <label class="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Assigned Editor</label>
+                            <select wire:model="editor_id" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 rounded-2xl py-3 px-4 text-xs font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <option value="">No Editor Assigned</option>
+                                @foreach($editors as $editor)
+                                    <option value="{{ $editor->id }}">{{ $editor->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endcan
+
                     <!-- Remarks / Feedback Loop -->
                     @if($editingArticleId && count($remarks) > 0)
                         <div class="space-y-6 pt-6 border-t border-zinc-200 dark:border-white/5">
