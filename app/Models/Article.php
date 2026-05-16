@@ -106,64 +106,6 @@ class Article extends Model
     }
 
     /**
-     * Record a view for this article (throttled by IP - 1 per hour).
-     */
-    public function recordView(?int $userId = null, ?string $ip = null, ?string $userAgent = null, ?string $referer = null): bool
-    {
-        // Throttle: only 1 view per IP per article per minute (reduced from hour for live feedback)
-        $recentView = $this->views()
-            ->where('ip_address', $ip)
-            ->where('viewed_at', '>=', now()->subMinute())
-            ->exists();
-
-        if ($recentView) {
-            return false;
-        }
-
-        $this->views()->create([
-            'user_id' => $userId,
-            'ip_address' => $ip,
-            'user_agent' => $userAgent,
-            'referer' => $referer,
-            'viewed_at' => now(),
-        ]);
-
-        // Trending notification (e.g., at 10, 50, 100 views for testing, can be adjusted)
-        $totalViews = $this->views()->count();
-        if (in_array($totalViews, [10, 50, 100, 500, 1000])) {
-            if ($this->author) {
-                $this->author->notify(new \App\Notifications\ArticleEngagementNotification('trending', $this));
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Scope: add view count as a subquery.
-     */
-    public function scopeWithViewCount($query)
-    {
-        return $query->withCount('views as view_count');
-    }
-
-    /**
-     * Scope: trending articles based on view velocity.
-     * $time can be integer (days) or a Carbon instance for more precision.
-     */
-    public function scopeTrending($query, $time = 7, int $limit = 10)
-    {
-        $since = is_numeric($time) ? now()->subDays($time) : $time;
-
-        return $query->where('status', 'published')
-            ->withCount(['views as trending_score' => function ($q) use ($since) {
-                $q->where('viewed_at', '>=', $since);
-            }])
-            ->orderByDesc('trending_score')
-            ->limit($limit);
-    }
-
-    /**
      * Get the full URL for the featured image.
      */
     public function getFeaturedImageUrlAttribute(): string
@@ -179,35 +121,5 @@ class Article extends Model
     public function getTotalViewsAttribute(): int
     {
         return $this->views()->count();
-    }
-
-    protected static function booted()
-    {
-        static::updated(function ($article) {
-            // Notify category followers when published
-            if ($article->wasChanged('status') && $article->status === 'published') {
-                if ($article->category) {
-                    $followers = $article->category->followers;
-                    foreach ($followers as $user) {
-                        // Skip author
-                        if ($user->id === $article->user_id) continue;
-                        
-                        $user->notify(new \App\Notifications\ReaderAlertNotification('new_article', [
-                            'article_id' => $article->id,
-                            'article_title' => $article->title,
-                            'category_name' => $article->category->name,
-                            'url' => route('article.show', $article->slug)
-                        ]));
-                    }
-                }
-            }
-        });
-
-        static::deleting(function ($article) {
-            // Cleanup physical image file
-            if ($article->featured_image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($article->featured_image);
-            }
-        });
     }
 }

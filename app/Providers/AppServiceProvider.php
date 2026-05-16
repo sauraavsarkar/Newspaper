@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Illuminate\Support\Facades\View::composer('layouts.public', \App\Http\View\Composers\PublicLayoutComposer::class);
+        Paginator::useTailwind();
+        \App\Models\Article::observe(\App\Observers\ArticleObserver::class);
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\ArticlePublished::class,
+            \App\Listeners\SendArticleNotification::class
+        );
 
         \Illuminate\Support\Facades\Event::subscribe(\App\Listeners\ActivityLogSubscriber::class);
 

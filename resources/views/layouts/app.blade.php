@@ -50,7 +50,7 @@
 
             <div class="flex items-center gap-4">
                 <!-- Notification Bell -->
-                <livewire:admin.notifications.notification-bell />
+                <livewire:shared.notification-bell />
 
                 <!-- Dark Mode Toggle -->
                 <button @click="darkMode = !darkMode"
