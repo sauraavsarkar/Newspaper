@@ -30,6 +30,16 @@ class ArticleShow extends Component
         $this->viewCount = $this->article->total_views;
     }
 
+    public function updateReadingProgress($percentage)
+    {
+        if (auth()->check()) {
+            \App\Models\ArticleReadingProgress::updateOrCreate(
+                ['user_id' => auth()->id(), 'article_id' => $this->article->id],
+                ['scroll_percentage' => max(0, min(100, $percentage))]
+            );
+        }
+    }
+
     public function render()
     {
         return view('livewire.frontend.article-show')

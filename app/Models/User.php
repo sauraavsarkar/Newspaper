@@ -111,4 +111,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(Reaction::class);
     }
+
+    /**
+     * Get categories followed by the user.
+     */
+    public function followedCategories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_user')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get article reading progress.
+     */
+    public function readingProgress(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ArticleReadingProgress::class);
+    }
+
+    /**
+     * Get articles that the user is currently reading.
+     */
+    public function continueReadingArticles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, 'article_reading_progress')
+            ->withPivot('scroll_percentage', 'last_read_at')
+            ->wherePivot('scroll_percentage', '<', 100)
+            ->orderByPivot('last_read_at', 'desc');
+    }
 }

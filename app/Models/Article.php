@@ -121,16 +121,29 @@ class Article extends Model
     }
 
     /**
-     * Scope: trending articles based on view velocity over the last N days.
+     * Scope: trending articles based on view velocity.
+     * $time can be integer (days) or a Carbon instance for more precision.
      */
-    public function scopeTrending($query, int $days = 7, int $limit = 10)
+    public function scopeTrending($query, $time = 7, int $limit = 10)
     {
+        $since = is_numeric($time) ? now()->subDays($time) : $time;
+
         return $query->where('status', 'published')
-            ->withCount(['views as trending_score' => function ($q) use ($days) {
-                $q->where('viewed_at', '>=', now()->subDays($days));
+            ->withCount(['views as trending_score' => function ($q) use ($since) {
+                $q->where('viewed_at', '>=', $since);
             }])
             ->orderByDesc('trending_score')
             ->limit($limit);
+    }
+
+    /**
+     * Get the full URL for the featured image.
+     */
+    public function getFeaturedImageUrlAttribute(): string
+    {
+        return $this->featured_image 
+            ? \Illuminate\Support\Facades\Storage::url($this->featured_image) 
+            : 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=2070&auto=format&fit=crop';
     }
 
     /**

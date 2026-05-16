@@ -67,10 +67,6 @@ class CommentItem extends Component
 
     public function toggleReply()
     {
-        if (!Auth::check()) {
-            $this->dispatch('notify', message: 'Please register to reply.', type: 'warning');
-            return;
-        }
         $this->isReplying = !$this->isReplying;
         $this->replyBody = '';
         $this->isEditing = false;
@@ -86,10 +82,17 @@ class CommentItem extends Component
             'replyBody' => 'required|string|max:2000',
         ]);
 
+        // Automatically tag the parent commenter if not already tagged
+        $tag = '@' . str_replace(' ', '', $this->comment->user->name) . ' ';
+        $finalBody = $this->replyBody;
+        if (!str_starts_with($finalBody, '@')) {
+            $finalBody = $tag . $finalBody;
+        }
+
         $this->comment->replies()->create([
             'article_id' => $this->comment->article_id,
             'user_id' => Auth::id(),
-            'body' => $this->replyBody,
+            'body' => $finalBody,
         ]);
 
         $this->isReplying = false;

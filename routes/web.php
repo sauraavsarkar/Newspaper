@@ -13,9 +13,18 @@ use App\Livewire\Frontend\ArticleShow;
 Route::get('/', Home::class)->name('home');
 Route::get('/article/{slug}', ArticleShow::class)->name('article.show');
 
-Route::view('dashboard', 'dashboard')
+Route::get('dashboard', function () {
+    $user = auth()->user();
+    if ($user->hasRole('Reader')) {
+        return redirect()->route('reader.dashboard');
+    }
+    // For Admin, Editor, Journalist, Moderator
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('reader/dashboard', \App\Livewire\Reader\Dashboard::class)
     ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    ->name('reader.dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/categories', CategoryManager::class)->name('admin.categories');
