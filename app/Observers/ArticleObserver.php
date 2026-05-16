@@ -9,6 +9,31 @@ use Illuminate\Support\Facades\Storage;
 class ArticleObserver
 {
     /**
+     * Handle the Article "saved" event.
+     */
+    public function saved(Article $article): void
+    {
+        $triggerType = $article->versionTrigger;
+
+        if (!$triggerType) {
+            // Deduce trigger from status change if not explicitly provided
+            if ($article->wasChanged('status')) {
+                $triggerType = match($article->status) {
+                    'submitted' => 'submitted',
+                    'approved' => 'approved',
+                    'rejected' => 'rejected',
+                    'published' => 'published',
+                    default => 'status_change',
+                };
+            }
+        }
+
+        if ($triggerType) {
+            app(\App\Services\VersionService::class)->snapshot($article, $triggerType, auth()->id());
+        }
+    }
+
+    /**
      * Handle the Article "updated" event.
      */
     public function updated(Article $article): void

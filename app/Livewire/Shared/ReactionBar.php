@@ -111,6 +111,6 @@ class ReactionBar extends Component
 
     public function render()
     {
-        return view('livewire.frontend.article-reactions');
+        return view('livewire.shared.reaction-bar');
     }
 }

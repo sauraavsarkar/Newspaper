@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Notifications\ArticleStatusNotification;
 use App\Notifications\EditorialNotification;
 use App\Notifications\SystemAlertNotification;
+use App\Notifications\ReaderAlertNotification;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -38,8 +39,14 @@ class ArticleList extends Component
     public $editingArticleId = null;
     public $isModalOpen = false;
     public $searchTerm = '';
-    public $remark = ''; // For editorial feedback
     public $editor_id = ''; // Assigned editor
+    public $lastSaved = null;
+    public $showHistory = false;
+    public $compareMode = false;
+    public $selectedVersions = [];
+    public $diffData = null;
+    public $versionPreview = null;
+    public $remark = '';
 
     protected $rules = [
         'title' => 'required|min:5',
@@ -96,7 +103,7 @@ class ArticleList extends Component
         $this->isModalOpen = true;
     }
 
-    public function save()
+    public function save($triggerType = 'manual')
     {
         if ($this->editingArticleId) {
             $article = Article::find($this->editingArticleId);
@@ -138,6 +145,7 @@ class ArticleList extends Component
             'editor_id' => $this->editor_id ?: null,
         ];
 
+        // Set the trigger for the observer
         if (!$this->editingArticleId) {
             $data['user_id'] = auth()->id();
         }
@@ -156,6 +164,8 @@ class ArticleList extends Component
 
         if ($this->editingArticleId) {
             $article = Article::find($this->editingArticleId);
+            $article->versionTrigger = $triggerType;
+            
             $wasBreaking = $article->is_breaking;
             $article->update($data);
             
@@ -295,6 +305,97 @@ class ArticleList extends Component
         }
     }
 
+    public function autoSave()
+    {
+        if (!$this->editingArticleId) return;
+
+        $article = Article::find($this->editingArticleId);
+        
+        $data = [
+            'title' => $this->title,
+            'content' => $this->content,
+            'excerpt' => $this->excerpt,
+            'category_id' => $this->category_id,
+        ];
+
+        app(\App\Services\VersionService::class)->saveDraft($article, $data);
+        $this->lastSaved = now()->format('H:i:s');
+    }
+
+    public function toggleHistory()
+    {
+        $this->showHistory = !$this->showHistory;
+        if (!$this->showHistory) {
+            $this->compareMode = false;
+            $this->selectedVersions = [];
+            $this->diffData = null;
+        }
+    }
+
+    public function previewVersion($versionId)
+    {
+        $this->versionPreview = \App\Models\ArticleVersion::with('user')->find($versionId);
+    }
+
+    public function closePreview()
+    {
+        $this->versionPreview = null;
+    }
+
+    public function selectVersion($versionId)
+    {
+        if (in_array($versionId, $this->selectedVersions)) {
+            $this->selectedVersions = array_diff($this->selectedVersions, [$versionId]);
+        } else {
+            if (count($this->selectedVersions) >= 2) {
+                array_shift($this->selectedVersions);
+            }
+            $this->selectedVersions[] = $versionId;
+        }
+    }
+
+    public function compareVersions()
+    {
+        if (count($this->selectedVersions) !== 2) return;
+
+        $article = Article::find($this->editingArticleId);
+        $versions = app(\App\Services\VersionService::class)->compare(
+            $article, 
+            min($this->selectedVersions), 
+            max($this->selectedVersions)
+        );
+
+        $this->diffData = [
+            'old' => $versions['old'],
+            'new' => $versions['new'],
+        ];
+        $this->compareMode = true;
+
+        $this->dispatch('render-diff', 
+            old: $versions['old']->content, 
+            new: $versions['new']->content
+        );
+    }
+
+    public function restoreVersion($versionId)
+    {
+        $article = Article::find($this->editingArticleId);
+        $version = \App\Models\ArticleVersion::findOrFail($versionId);
+
+        app(\App\Services\VersionService::class)->restore($article, $version);
+
+        // Update component state
+        $this->title = $article->fresh()->title;
+        $this->content = $article->fresh()->content;
+        $this->excerpt = $article->fresh()->excerpt;
+        $this->category_id = $article->fresh()->category_id;
+        
+        $this->showHistory = false;
+        $this->versionPreview = null;
+        
+        session()->flash('message', "Restored to Version {$version->version_number}");
+    }
+
     public function render()
     {
         $editorialRemarks = [];
@@ -313,6 +414,26 @@ class ArticleList extends Component
         }
 
         $articles = $articlesQuery->latest()->paginate(10);
+        
+        $versions = [];
+        if ($this->editingArticleId) {
+            $versions = \App\Models\ArticleVersion::with('user')
+                ->where('article_id', $this->editingArticleId)
+                ->orderBy('version_number', 'desc')
+                ->get();
+        }
+
+        $statsQuery = Article::query();
+        if (!auth()->user()->can('edit any article')) {
+            $statsQuery->where('user_id', auth()->id());
+        }
+
+        $stats = [
+            'total' => (clone $statsQuery)->count(),
+            'published' => (clone $statsQuery)->where('status', 'published')->count(),
+            'pending' => (clone $statsQuery)->where('status', 'submitted')->count(),
+            'drafts' => (clone $statsQuery)->where('status', 'draft')->count(),
+        ];
 
         return view('livewire.journalist.article-list', [
             'articles' => $articles,
@@ -320,6 +441,8 @@ class ArticleList extends Component
             'tags' => Tag::all(),
             'remarks' => $editorialRemarks,
             'editors' => User::role(['Editor', 'Admin'])->get(),
+            'versions' => $versions,
+            'stats' => $stats,
         ]);
     }
 }

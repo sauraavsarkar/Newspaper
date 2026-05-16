@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -23,6 +24,9 @@ class Article extends Model
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
+
+    public ?string $versionTrigger = null;
+
 
     protected $fillable = [
         'user_id',
@@ -121,5 +125,28 @@ class Article extends Model
     public function getTotalViewsAttribute(): int
     {
         return $this->views()->count();
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ArticleVersion::class);
+    }
+
+    public function drafts(): HasMany
+    {
+        return $this->hasMany(ArticleDraft::class);
+    }
+
+    /**
+     * Scope a query to only include trending articles.
+     */
+    public function scopeTrending(Builder $query, int $days = 7, int $limit = 5): Builder
+    {
+        return $query->where('status', 'published')
+            ->withCount(['views as trending_score' => function ($q) use ($days) {
+                $q->where('viewed_at', '>=', now()->subDays($days));
+            }])
+            ->orderByDesc('trending_score')
+            ->limit($limit);
     }
 }

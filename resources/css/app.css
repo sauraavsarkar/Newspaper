@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-[x-cloak] { display: none !important; }
+[x-cloak] {
+    display: none !important;
+}
 
 @layer base {
     :root {
@@ -50,4 +52,118 @@
 
 ::-webkit-scrollbar-thumb {
     @apply bg-zinc-300 dark:bg-zinc-800 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-700 transition-colors;
+}
+
+/* Premium CKEditor Refinement */
+.ck-reset_all.ck-widget__type-around__button {
+    display: none !important;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+    @apply min-h-[400px] px-10 py-10 text-base font-medium leading-loose transition-all duration-500 !important;
+    border-bottom-left-radius: 2.5rem !important;
+    border-bottom-right-radius: 2.5rem !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+/* Light Mode Premium Editor */
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+    @apply bg-zinc-50 border-zinc-100 shadow-sm !important;
+}
+
+.ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    @apply bg-white border-indigo-500/30 shadow-2xl shadow-indigo-500/10 ring-4 ring-indigo-500/5 !important;
+}
+
+/* Premium Toolbar Styling */
+.ck.ck-toolbar {
+    @apply bg-zinc-50/80 backdrop-blur-md border-zinc-100 px-6 py-4 transition-all duration-500 !important;
+    border-top-left-radius: 2.5rem !important;
+    border-top-right-radius: 2.5rem !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.ck.ck-toolbar__items {
+    @apply gap-2 !important;
+}
+
+.ck.ck-button {
+    @apply rounded-xl border-none transition-all duration-300 !important;
+}
+
+.ck.ck-button:hover {
+    @apply bg-zinc-200/50 scale-110 !important;
+}
+
+.ck.ck-button.ck-on {
+    @apply bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 !important;
+}
+
+/* Dark Mode Overrides */
+.dark .ck.ck-editor__main > .ck-editor__editable {
+    @apply bg-white/[0.02] border-white/5 text-zinc-100 !important;
+    color: #e4e4e7 !important;
+}
+
+.dark .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    @apply bg-zinc-900/50 border-indigo-500/30 shadow-2xl shadow-indigo-500/20 ring-4 ring-indigo-500/10 !important;
+}
+
+.dark .ck.ck-toolbar {
+    @apply bg-zinc-950/80 backdrop-blur-xl border-white/5 !important;
+}
+
+.dark .ck.ck-button {
+    @apply text-zinc-400 !important;
+}
+
+.dark .ck.ck-button:hover {
+    @apply bg-white/10 text-white !important;
+}
+
+.dark .ck.ck-button.ck-on {
+    @apply bg-indigo-600 text-white !important;
+}
+
+.dark .ck.ck-dropdown__panel {
+    @apply bg-zinc-900 border-white/10 shadow-2xl rounded-2xl overflow-hidden !important;
+}
+
+.dark .ck.ck-list {
+    @apply bg-zinc-900 !important;
+}
+
+.dark .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
+    @apply bg-white/5 text-white !important;
+}
+
+.dark .ck.ck-placeholder::before {
+    @apply text-zinc-600 !important;
+}
+
+/* Content Typography */
+.ck-content {
+    @apply font-medium !important;
+}
+
+.ck-content blockquote {
+    @apply border-l-4 border-indigo-500/30 bg-indigo-500/5 py-6 px-8 rounded-r-3xl italic text-zinc-600 dark:text-zinc-400 my-8 !important;
+}
+
+.ck-content p {
+    @apply mb-6 !important;
+}
+
+.ck-content h2, .ck-content h3, .ck-content h4 {
+    @apply font-black tracking-tight text-zinc-900 dark:text-white mt-12 mb-6 !important;
+}
+
+.ck-content a {
+    @apply text-indigo-500 dark:text-indigo-400 font-bold underline decoration-indigo-500/30 hover:decoration-indigo-500 transition-all !important;
+}
+
+.ck.ck-editor {
+    @apply transition-all duration-500 !important;
 }

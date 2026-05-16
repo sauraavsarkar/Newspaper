@@ -47,7 +47,7 @@ class CommentSection extends Component
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('livewire.frontend.comment-section', [
+        return view('livewire.shared.comment-section', [
             'comments' => $comments,
         ]);
     }
