@@ -311,12 +311,20 @@
 
             <!-- Right: Command Center Sidebar -->
             <aside class="w-full lg:w-[420px] border-t lg:border-t-0 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col h-full overflow-hidden"
+                   x-data="{ activeTab: 'settings' }"
                    x-show="!isMobile || sidebarOpen"
                    x-transition:enter="transition ease-out duration-300"
                    x-transition:enter-start="translate-x-full"
                    x-transition:enter-end="translate-x-0">
 
+                <!-- Tab Switcher -->
+                <div class="flex border-b border-zinc-200 dark:border-white/5">
+                    <button @click="activeTab = 'settings'" :class="activeTab === 'settings' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all">Settings</button>
+                    <button @click="activeTab = 'history'" :class="activeTab === 'history' ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'" class="flex-1 py-4 text-[10px] font-black uppercase tracking-widest border-b-2 transition-all">History</button>
+                </div>
+
                 <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-12">
+                    <div x-show="activeTab === 'settings'" class="space-y-12">
 
                     <!-- Feature Image / Media Frame -->
                     <div class="group">
@@ -447,6 +455,18 @@
                             </div>
                         </div>
                     @endif
+                    </div> <!-- End Settings Tab -->
+
+                    <!-- History Tab -->
+                    <div x-show="activeTab === 'history'" class="space-y-6">
+                        @if($editingArticleId)
+                            <livewire:admin.articles.article-timeline :article="\App\Models\Article::find($editingArticleId)" :key="'timeline-'.$editingArticleId" />
+                        @else
+                            <div class="text-center py-12 text-zinc-500 text-sm italic">
+                                Save the article first to view history.
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Footer Operations -->

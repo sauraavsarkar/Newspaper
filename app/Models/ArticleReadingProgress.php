@@ -4,8 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
+
 class ArticleReadingProgress extends Model
 {
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['article_id', 'scroll_percentage'])
+            ->logOnlyDirty()
+            ->useLogName('reading')
+            ->setDescriptionForEvent(fn(string $eventName) => $eventName === 'created' ? 'Started reading article' : 'Reading progress updated');
+    }
     protected $table = 'article_reading_progress';
 
     protected $fillable = [

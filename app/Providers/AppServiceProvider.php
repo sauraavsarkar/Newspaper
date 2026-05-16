@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Support\Facades\View::composer('layouts.public', \App\Http\View\Composers\PublicLayoutComposer::class);
 
+        \Illuminate\Support\Facades\Event::subscribe(\App\Listeners\ActivityLogSubscriber::class);
+
         // Implicitly grant "Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user()->can() and @can()
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {

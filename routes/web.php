@@ -33,9 +33,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/roles', RoleManager::class)->name('admin.roles');
     Route::get('admin/users', UserManager::class)->name('admin.users');
     Route::get('admin/users/{user}/edit', \App\Livewire\Profile\ProfileEditor::class)->name('admin.users.edit');
+    Route::get('admin/activity', \App\Livewire\Admin\ActivityFeed::class)->name('admin.activity');
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('account/activity', \App\Livewire\Reader\AccountActivity::class)->name('reader.activity');
     Route::get('profile', \App\Livewire\Profile\ProfileEditor::class)->name('profile');
     Route::get('profile/edit', \App\Livewire\Profile\ProfileEditor::class)->name('profile.edit');
 });
