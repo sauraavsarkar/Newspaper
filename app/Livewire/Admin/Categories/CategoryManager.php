@@ -34,14 +34,27 @@ class CategoryManager extends Component
         }
     }
 
+    public function mount()
+    {
+        if (!auth()->user()->can('manage categories')) {
+            abort(403);
+        }
+    }
+
     public function create()
     {
+        if (!auth()->user()->can('manage categories')) {
+            return;
+        }
         $this->reset(['name', 'slug', 'description', 'is_active', 'editingCategoryId']);
         $this->isModalOpen = true;
     }
 
     public function edit($id)
     {
+        if (!auth()->user()->can('manage categories')) {
+            return;
+        }
         $category = Category::findOrFail($id);
         $this->editingCategoryId = $id;
         $this->name = $category->name;
@@ -53,6 +66,9 @@ class CategoryManager extends Component
 
     public function save()
     {
+        if (!auth()->user()->can('manage categories')) {
+            return;
+        }
         $rules = $this->rules;
         if ($this->editingCategoryId) {
             $rules['name'] = 'required|min:3|unique:categories,name,' . $this->editingCategoryId;
@@ -85,12 +101,18 @@ class CategoryManager extends Component
 
     public function delete($id)
     {
+        if (!auth()->user()->can('manage categories')) {
+            return;
+        }
         Category::find($id)->delete();
         session()->flash('message', 'Category deleted successfully.');
     }
 
     public function toggleStatus($id)
     {
+        if (!auth()->user()->can('manage categories')) {
+            return;
+        }
         $category = Category::find($id);
         $category->is_active = !$category->is_active;
         $category->save();

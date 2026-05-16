@@ -24,6 +24,20 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'avatar',
+        'bio',
+        'location',
+        'website',
+        'twitter_url',
+        'linkedin_url',
+        'phone',
+        'beat',
+        'byline',
+        'preferences',
+        'status',
+        'two_factor_enabled',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -46,6 +60,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'preferences' => 'array',
+            'two_factor_enabled' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -55,5 +72,27 @@ class User extends Authenticatable
     public function articles(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Article::class);
+    }
+
+    /**
+     * Get user's subscription record.
+     */
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)->where('status', 'active')->latestOfMany();
+    }
+
+    /**
+     * Get articles saved by the user.
+     */
+    public function savedArticles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, 'user_saved_articles')
+            ->withPivot('saved_at');
     }
 }

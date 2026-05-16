@@ -35,7 +35,7 @@ class AnalyticsDashboard extends Component
         $totalArticles = Article::count();
         $publishedArticles = Article::where('status', 'published')->count();
         $draftArticles = Article::where('status', 'draft')->count();
-        $pendingArticles = Article::whereIn('status', ['pending'])->count();
+        $pendingArticles = Article::whereIn('status', ['submitted', 'in_review'])->count();
 
         $uniqueVisitors = ArticleView::where('viewed_at', '>=', $startDate)
             ->distinct('ip_address')

@@ -41,7 +41,7 @@ class ArticleManager extends Component
         'slug' => 'required|unique:articles,slug',
         'content' => 'required|min:20',
         'category_id' => 'required|exists:categories,id',
-        'status' => 'required|in:draft,pending,published,scheduled,rejected,archived',
+        'status' => 'required|in:draft,submitted,in_review,approved,published,scheduled,rejected,archived',
         'featured_image' => 'nullable|image|max:2048',
         'published_at' => 'nullable|date',
     ];
@@ -55,6 +55,10 @@ class ArticleManager extends Component
 
     public function create()
     {
+        if (!auth()->user()->can('create article')) {
+            session()->flash('error', 'You do not have permission to create stories.');
+            return;
+        }
         Log::info('ArticleManager: Opening create modal.');
         $this->reset(['title', 'slug', 'content', 'excerpt', 'category_id', 'status', 'is_featured', 'is_breaking', 'featured_image', 'selectedTags', 'editingArticleId', 'remark', 'published_at']);
         $this->isModalOpen = true;
@@ -62,8 +66,15 @@ class ArticleManager extends Component
 
     public function edit($id)
     {
-        Log::info("ArticleManager: Opening edit modal for article ID: {$id}");
         $article = Article::with(['tags', 'editorialRemarks.user'])->findOrFail($id);
+        
+        $canEdit = auth()->user()->can('edit any article') || 
+                  (auth()->user()->can('edit own article') && $article->user_id === auth()->id());
+
+        if (!$canEdit) {
+            session()->flash('error', 'You do not have permission to edit this story.');
+            return;
+        }
         $this->editingArticleId = $id;
         $this->title = $article->title;
         $this->slug = $article->slug;
@@ -81,6 +92,22 @@ class ArticleManager extends Component
 
     public function save()
     {
+        if ($this->editingArticleId) {
+            $article = Article::find($this->editingArticleId);
+            $canUpdate = auth()->user()->can('edit any article') || 
+                        (auth()->user()->can('edit own article') && $article->user_id === auth()->id());
+            
+            if (!$canUpdate) {
+                session()->flash('error', 'You do not have permission to update this story.');
+                return;
+            }
+        } else {
+            if (!auth()->user()->can('create article')) {
+                session()->flash('error', 'You do not have permission to create stories.');
+                return;
+            }
+        }
+
         Log::info('ArticleManager: Attempting to save article.', [
             'id' => $this->editingArticleId,
             'title' => $this->title,
@@ -137,13 +164,17 @@ class ArticleManager extends Component
 
     public function submitForReview()
     {
-        $this->status = 'pending';
+        $this->status = 'submitted';
         $this->save();
         session()->flash('message', 'Article submitted for review.');
     }
 
     public function approve()
     {
+        if (!auth()->user()->can('publish article') && !auth()->user()->can('approve article')) {
+            session()->flash('error', 'You do not have permission to approve stories.');
+            return;
+        }
         $this->status = 'published';
         $this->save();
         session()->flash('message', 'Article approved and published.');
@@ -151,6 +182,10 @@ class ArticleManager extends Component
 
     public function reject()
     {
+        if (!auth()->user()->can('publish article') && !auth()->user()->can('reject article')) {
+            session()->flash('error', 'You do not have permission to reject stories.');
+            return;
+        }
         $this->validate([
             'remark' => 'required|min:5'
         ]);
@@ -169,9 +204,17 @@ class ArticleManager extends Component
 
     public function delete($id)
     {
+        if (!auth()->user()->can('delete article')) {
+            session()->flash('error', 'You do not have permission to delete stories.');
+            return;
+        }
         Log::info("ArticleManager: Deleting article ID: {$id}");
-        Article::find($id)->delete();
-        session()->flash('message', 'Article deleted successfully.');
+        $article = Article::find($id);
+        
+        if ($article) {
+            $article->delete();
+            session()->flash('message', 'Article and all associated data removed successfully.');
+        }
     }
 
     public function render()
@@ -184,11 +227,17 @@ class ArticleManager extends Component
                 ->get();
         }
 
+        $articlesQuery = Article::with(['author', 'category'])
+            ->where('title', 'like', '%' . $this->searchTerm . '%');
+
+        if (!auth()->user()->can('edit any article')) {
+            $articlesQuery->where('user_id', auth()->id());
+        }
+
+        $articles = $articlesQuery->latest()->paginate(10);
+
         return view('livewire.admin.articles.article-manager', [
-            'articles' => Article::with(['author', 'category'])
-                ->where('title', 'like', '%' . $this->searchTerm . '%')
-                ->latest()
-                ->paginate(10),
+            'articles' => $articles,
             'categories' => Category::where('is_active', true)->get(),
             'tags' => Tag::all(),
             'remarks' => $editorialRemarks,

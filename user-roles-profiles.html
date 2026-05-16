@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Roles & Profile System — Newspaper CMS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3a;
+    --text: #e8e6f0;
+    --muted: #7a7890;
+    --admin:    #ff6b6b;
+    --editor:   #ffd93d;
+    --journalist: #6bcb77;
+    --moderator:#4d96ff;
+    --reader:   #c77dff;
+    --admin-bg:      rgba(255,107,107,0.08);
+    --editor-bg:     rgba(255,217,61,0.08);
+    --journalist-bg: rgba(107,203,119,0.08);
+    --moderator-bg:  rgba(77,150,255,0.08);
+    --reader-bg:     rgba(199,125,255,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* noise texture overlay */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: .9rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+  .nav-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+  .nav-tabs {
+    display: flex; gap: .3rem; margin-left: auto;
+  }
+  .nav-tab {
+    font-size: .72rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: .06em;
+    padding: .35rem .8rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: var(--muted);
+    background: transparent;
+    transition: all .2s;
+  }
+  .nav-tab:hover { color: var(--text); border-color: var(--border); }
+  .nav-tab.active { color: var(--text); background: var(--surface2); border-color: var(--border); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index:1;
+    padding: 4rem 2rem 2.5rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .8rem;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-desc {
+    max-width: 580px;
+    font-size: .9rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .container {
+    position: relative; z-index:1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 5rem;
+  }
+
+  /* section separator */
+  .sep {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 3rem 0 1.5rem;
+  }
+  .sep-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    white-space: nowrap;
+  }
+  .sep-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  /* ── ROLE CARDS ── */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .role-card {
+    background: var(--surface);
+    padding: 1.6rem;
+    transition: background .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .role-card::before {
+    content:'';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .role-card:hover { background: var(--surface2); }
+
+  .role-card.admin::before    { background: var(--admin); }
+  .role-card.editor::before   { background: var(--editor); }
+  .role-card.journalist::before{ background: var(--journalist); }
+  .role-card.moderator::before{ background: var(--moderator); }
+  .role-card.reader::before   { background: var(--reader); }
+
+  .role-header {
+    display: flex; align-items: center; gap: .8rem;
+    margin-bottom: 1rem;
+  }
+  .role-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .admin    .role-icon { background: var(--admin-bg);      color: var(--admin); }
+  .editor   .role-icon { background: var(--editor-bg);     color: var(--editor); }
+  .journalist .role-icon { background: var(--journalist-bg); color: var(--journalist); }
+  .moderator .role-icon { background: var(--moderator-bg); color: var(--moderator); }
+  .reader   .role-icon { background: var(--reader-bg);     color: var(--reader); }
+
+  .role-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+  }
+  .role-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: .58rem;
+    letter-spacing: .12em;
+    padding: .15rem .5rem;
+    border-radius: 3px;
+    margin-left: auto;
+    text-transform: uppercase;
+  }
+  .admin    .role-badge { background: var(--admin-bg);      color: var(--admin); }
+  .editor   .role-badge { background: var(--editor-bg);     color: var(--editor); }
+  .journalist .role-badge { background: var(--journalist-bg); color: var(--journalist); }
+  .moderator .role-badge { background: var(--moderator-bg); color: var(--moderator); }
+  .reader   .role-badge { background: var(--reader-bg);     color: var(--reader); }
+
+  .role-desc {
+    font-size: .8rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .perm-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+  .perm-list li {
+    font-size: .75rem;
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+    line-height: 1.5;
+  }
+  .perm-list li .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .admin    .dot { background: var(--admin); }
+  .editor   .dot { background: var(--editor); }
+  .journalist .dot { background: var(--journalist); }
+  .moderator .dot { background: var(--moderator); }
+  .reader   .dot { background: var(--reader); }
+
+  .perm-list li .denied {
+    text-decoration: line-through;
+    color: #444;
+  }
+
+  /* ── PERMISSION MATRIX ── */
+  .matrix-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .75rem;
+  }
+  .matrix th {
+    font-family: 'DM Mono', monospace;
+    font-size: .6rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .8rem 1rem;
+    background: var(--surface2);
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .matrix th:first-child { text-align: left; min-width: 200px; }
+  .matrix td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    text-align: center;
+    background: var(--surface);
+    transition: background .15s;
+  }
+  .matrix tr:hover td { background: var(--surface2); }
+  .matrix td:first-child {
+    text-align: left;
+    font-size: .78rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .matrix td .cat {
+    font-family: 'DM Mono', monospace;
+    font-size: .58rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 1px;
+    letter-spacing: .06em;
+  }
+  .check { color: #6bcb77; font-size: .9rem; }
+  .cross { color: #2a2a3a; font-size: .9rem; }
+  .partial { color: #ffd93d; font-size: .9rem; }
+
+  /* role header colors in matrix */
+  .th-admin    { color: var(--admin) !important; }
+  .th-editor   { color: var(--editor) !important; }
+  .th-journalist { color: var(--journalist) !important; }
+  .th-moderator { color: var(--moderator) !important; }
+  .th-reader   { color: var(--reader) !important; }
+
+  /* ── PROFILE FIELDS ── */
+  .profile-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  @media (max-width: 680px) {
+    .profile-sections { grid-template-columns: 1fr; }
+  }
+  .profile-section {
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+  .ps-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: .95rem;
+    margin-bottom: .3rem;
+  }
+  .ps-desc {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-bottom: .8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .field-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .8rem;
+    padding: .5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .field-row:last-child { border-bottom: none; }
+  .field-name {
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    color: var(--muted);
+    width: 130px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .field-detail {
+    font-size: .77rem;
+    line-height: 1.55;
+    flex: 1;
+  }
+  .field-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: .55rem;
+    padding: .1rem .4rem;
+    border-radius: 3px;
+    margin-left: .4rem;
+    vertical-align: middle;
+  }
+  .tag-req { background: rgba(255,107,107,0.15); color: var(--admin); }
+  .tag-opt { background: rgba(107,203,119,0.12); color: var(--journalist); }
+  .tag-auto { background: rgba(77,150,255,0.12); color: var(--moderator); }
+  .tag-private { background: rgba(199,125,255,0.12); color: var(--reader); }
+
+  /* ── SPATIE CODE BLOCK ── */
+  .code-block {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-header {
+    background: var(--surface2);
+    padding: .6rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .65rem;
+    letter-spacing: .1em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .code-dot { width:8px; height:8px; border-radius:50%; }
+  .code-body {
+    padding: 1.2rem 1.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .73rem;
+    line-height: 2;
+    overflow-x: auto;
+    color: #c8c0e0;
+  }
+  .kw { color: #ff6b6b; }
+  .fn { color: #6bcb77; }
+  .str { color: #ffd93d; }
+  .cm { color: #444; }
+  .cl { color: #4d96ff; }
+
+  /* ── WORKFLOW DIAGRAM ── */
+  .workflow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-wrap: nowrap;
+  }
+  .wf-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    flex-shrink: 0;
+    min-width: 110px;
+  }
+  .wf-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    border: 2px solid;
+  }
+  .wf-label {
+    font-size: .68rem;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    color: var(--muted);
+    letter-spacing: .04em;
+  }
+  .wf-role {
+    font-size: .6rem;
+    color: var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+  .wf-arrow {
+    font-size: 1.2rem;
+    color: var(--border);
+    flex-shrink: 0;
+    padding: 0 .3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .wf-journalist .wf-circle { border-color: var(--journalist); background: var(--journalist-bg); color: var(--journalist); }
+  .wf-editor .wf-circle     { border-color: var(--editor);     background: var(--editor-bg);     color: var(--editor); }
+  .wf-admin .wf-circle      { border-color: var(--admin);      background: var(--admin-bg);      color: var(--admin); }
+  .wf-live .wf-circle       { border-color: #6bcb77;           background: rgba(107,203,119,.15); color: #6bcb77; }
+
+  /* ── DB SCHEMA ── */
+  .schema-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 600px) { .schema-grid { grid-template-columns: 1fr; } }
+  .schema-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .schema-title {
+    background: var(--surface2);
+    padding: .6rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .schema-row {
+    display: flex;
+    padding: .45rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    gap: .8rem;
+    font-size: .72rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .schema-row:last-child { border: none; }
+  .col-name { color: #c8c0e0; flex: 1; }
+  .col-type { color: var(--muted); font-size: .65rem; }
+  .col-pk { color: var(--admin); font-size: .58rem; }
+  .col-fk { color: var(--moderator); font-size: .58rem; }
+  .col-idx { color: var(--journalist); font-size: .58rem; }
+
+  /* tabs content */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">CMS Roles</span>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('roles')">Roles</button>
+    <button class="nav-tab" onclick="switchTab('matrix')">Permissions</button>
+    <button class="nav-tab" onclick="switchTab('profile')">Profiles</button>
+    <button class="nav-tab" onclick="switchTab('workflow')">Workflow</button>
+    <button class="nav-tab" onclick="switchTab('code')">Code</button>
+    <button class="nav-tab" onclick="switchTab('db')">Database</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Newspaper CMS · System Design</div>
+  <h1>User Roles<br><em>& Profile Architecture</em></h1>
+  <p class="hero-desc">Every permission, every profile field, every workflow state — all in one reference. Use this as your blueprint before writing a single line of code.</p>
+</div>
+
+<div class="container">
+
+  <!-- ══ TAB: ROLES ══ -->
+  <div id="tab-roles" class="tab-content active">
+    <div class="sep"><span class="sep-title">The 5 Roles</span><div class="sep-line"></div></div>
+    <div class="roles-grid">
+
+      <!-- ADMIN -->
+      <div class="role-card admin">
+        <div class="role-header">
+          <div class="role-icon">⚡</div>
+          <div class="role-name">Admin</div>
+          <span class="role-badge">Super User</span>
+        </div>
+        <p class="role-desc">Full system control. Manages users, roles, site settings, homepage builder, ads, and can override any workflow step.</p>
+        <ul class="perm-list">
+          <li><div class="dot"></div> Manage all users & assign roles</li>
+          <li><div class="dot"></div> Publish / unpublish any article instantly</li>
+          <li><div class="dot"></div> Access full analytics dashboard</li>
+          <li><div class="dot"></div> Configure homepage sections</li>
+          <li><div class="dot"></div> Manage ad placements</li>
+          <li><div class="dot"></div> Delete comments & ban users</li>
+          <li><div class="dot"></div> Manage subscription plans</li>
+          <li><div class="dot"></div> View system activity logs</li>
+          <li><div class="dot"></div> Send breaking news alerts</li>
+        </ul>
+      </div>
+
+      <!-- EDITOR -->
+      <div class="role-card editor">
+        <div class="role-header">
+          <div class="role-icon">✏️</div>
+          <div class="role-name">Editor</div>
+          <span class="role-badge">Gate Keeper</span>
+        </div>
+        <p class="role-desc">Reviews and approves journalist submissions. Can edit any article before publishing and manage categories & tags.</p>
+        <ul class="perm-list">
+          <li><div class="dot"></div> View all submitted articles</li>
+          <li><div class="dot"></div> Approve or reject with notes</li>
+          <li><div class="dot"></div> Edit any article before publishing</li>
+          <li><div class="dot"></div> Schedule article publish time</li>
+          <li><div class="dot"></div> Manage categories & tags</li>
+          <li><div class="dot"></div> Mark article as "featured"</li>
+          <li><div class="dot"></div> Toggle breaking news flag</li>
+          <li><div class="dot"></div> Access category analytics</li>
+          <li><div class="dot"></div><span class="denied">Cannot manage users or billing</span></li>
+        </ul>
+      </div>
+
+      <!-- JOURNALIST -->
+      <div class="role-card journalist">
+        <div class="role-header">
+          <div class="role-icon">📝</div>
+          <div class="role-name">Journalist</div>
+          <span class="role-badge">Content Creator</span>
+        </div>
+        <p class="role-desc">Creates and manages their own articles. Submits to editorial review. Cannot publish directly.</p>
+        <ul class="perm-list">
+          <li><div class="dot"></div> Create new articles (own)</li>
+          <li><div class="dot"></div> Edit own draft articles</li>
+          <li><div class="dot"></div> Upload media to own articles</li>
+          <li><div class="dot"></div> Submit articles for review</li>
+          <li><div class="dot"></div> View own article analytics</li>
+          <li><div class="dot"></div> Save drafts (auto-save)</li>
+          <li><div class="dot"></div> View revision history (own)</li>
+          <li><div class="dot"></div><span class="denied">Cannot publish directly</span></li>
+          <li><div class="dot"></div><span class="denied">Cannot edit other journalists' work</span></li>
+        </ul>
+      </div>
+
+      <!-- MODERATOR -->
+      <div class="role-card moderator">
+        <div class="role-header">
+          <div class="role-icon">🛡️</div>
+          <div class="role-name">Moderator</div>
+          <span class="role-badge">Community</span>
+        </div>
+        <p class="role-desc">Focuses entirely on community health. Reviews comments, handles abuse reports, and manages reader interactions.</p>
+        <ul class="perm-list">
+          <li><div class="dot"></div> View all comments</li>
+          <li><div class="dot"></div> Approve / reject / delete comments</li>
+          <li><div class="dot"></div> Handle abuse reports</li>
+          <li><div class="dot"></div> Temporarily ban readers</li>
+          <li><div class="dot"></div> Mark comments as spam</li>
+          <li><div class="dot"></div> View moderation activity log</li>
+          <li><div class="dot"></div><span class="denied">Cannot access articles backend</span></li>
+          <li><div class="dot"></div><span class="denied">Cannot manage user roles</span></li>
+        </ul>
+      </div>
+
+      <!-- READER -->
+      <div class="role-card reader">
+        <div class="role-header">
+          <div class="role-icon">👤</div>
+          <div class="role-name">Reader / Subscriber</div>
+          <span class="role-badge">Public</span>
+        </div>
+        <p class="role-desc">Registered public users. Free readers get standard content; subscribers unlock premium articles and newsletters.</p>
+        <ul class="perm-list">
+          <li><div class="dot"></div> Read all public articles</li>
+          <li><div class="dot"></div> Post comments (after email verify)</li>
+          <li><div class="dot"></div> Save articles to reading list</li>
+          <li><div class="dot"></div> Subscribe to newsletter</li>
+          <li><div class="dot"></div> Manage own profile</li>
+          <li><div class="dot"></div> <em>Subscribers:</em> premium articles</li>
+          <li><div class="dot"></div> <em>Subscribers:</em> ad-free reading</li>
+          <li><div class="dot"></div><span class="denied">No backend access whatsoever</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TAB: MATRIX ══ -->
+  <div id="tab-matrix" class="tab-content">
+    <div class="sep"><span class="sep-title">Permission Matrix</span><div class="sep-line"></div></div>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th class="th-admin">Admin</th>
+            <th class="th-editor">Editor</th>
+            <th class="th-journalist">Journalist</th>
+            <th class="th-moderator">Moderator</th>
+            <th class="th-reader">Reader</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Create article<span class="cat">Articles</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Edit own article<span class="cat">Articles</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Edit any article<span class="cat">Articles</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Delete article<span class="cat">Articles</span></td><td class="check">✓</td><td class="partial">own</td><td class="partial">draft only</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Publish article<span class="cat">Publishing</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Schedule publish<span class="cat">Publishing</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Submit for review<span class="cat">Publishing</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Approve / reject<span class="cat">Editorial</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Toggle breaking news<span class="cat">Editorial</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Mark as featured<span class="cat">Editorial</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Upload media<span class="cat">Media</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Delete any media<span class="cat">Media</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>View all comments<span class="cat">Comments</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td></tr>
+          <tr><td>Delete comments<span class="cat">Comments</span></td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td></tr>
+          <tr><td>Post comment<span class="cat">Comments</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>Manage users<span class="cat">Users</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Assign roles<span class="cat">Users</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Ban users<span class="cat">Users</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">temp</td><td class="cross">✗</td></tr>
+          <tr><td>View analytics<span class="cat">Analytics</span></td><td class="check">✓</td><td class="check">✓</td><td class="partial">own</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Homepage builder<span class="cat">Settings</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Manage ads<span class="cat">Settings</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>Read premium articles<span class="cat">Content</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="partial">sub</td></tr>
+          <tr><td>Save reading list<span class="cat">Content</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.7rem; color:var(--muted); margin-top:.8rem; font-family:'DM Mono',monospace;">
+      ✓ full &nbsp;·&nbsp; ✗ none &nbsp;·&nbsp; partial = limited scope (own / temp / sub = subscriber only)
+    </p>
+  </div>
+
+  <!-- ══ TAB: PROFILE ══ -->
+  <div id="tab-profile" class="tab-content">
+    <div class="sep"><span class="sep-title">Profile Fields (All Roles)</span><div class="sep-line"></div></div>
+    <div class="profile-sections">
+
+      <div class="profile-section">
+        <div class="ps-title">Core Identity</div>
+        <div class="ps-desc">Applies to every role. Required for account creation.</div>
+        <div class="field-row">
+          <span class="field-name">name</span>
+          <span class="field-detail">Full display name <span class="field-tag tag-req">required</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">email</span>
+          <span class="field-detail">Unique, verified email <span class="field-tag tag-req">required</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">password</span>
+          <span class="field-detail">Hashed (bcrypt), min 8 chars <span class="field-tag tag-req">required</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">avatar</span>
+          <span class="field-detail">Profile photo — upload or Gravatar fallback <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">username</span>
+          <span class="field-detail">URL-safe slug for public profile <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">bio</span>
+          <span class="field-detail">Short biography, max 300 chars <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">email_verified_at</span>
+          <span class="field-detail">Timestamp of verification <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">status</span>
+          <span class="field-detail">active / suspended / banned <span class="field-tag tag-auto">auto</span></span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="ps-title">Contact & Socials</div>
+        <div class="ps-desc">Optional. Shown on journalist public profiles.</div>
+        <div class="field-row">
+          <span class="field-name">phone</span>
+          <span class="field-detail">Optional, private by default <span class="field-tag tag-private">private</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">website</span>
+          <span class="field-detail">Personal or portfolio URL <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">twitter_url</span>
+          <span class="field-detail">X / Twitter profile link <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">linkedin_url</span>
+          <span class="field-detail">LinkedIn profile link <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">location</span>
+          <span class="field-detail">City / Country text field <span class="field-tag tag-opt">optional</span></span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="ps-title">Journalist-Specific Fields</div>
+        <div class="ps-desc">Only visible and editable for Journalist role.</div>
+        <div class="field-row">
+          <span class="field-name">beat</span>
+          <span class="field-detail">Coverage area e.g. "Politics, Finance" <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">byline</span>
+          <span class="field-detail">Custom byline for articles e.g. "Senior Correspondent" <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">articles_count</span>
+          <span class="field-detail">Total published articles <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">total_views</span>
+          <span class="field-detail">Aggregate view count of their articles <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">joined_at</span>
+          <span class="field-detail">Date joined editorial team <span class="field-tag tag-auto">auto</span></span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="ps-title">Preferences & Notifications</div>
+        <div class="ps-desc">User-controlled settings, stored as JSON or separate table.</div>
+        <div class="field-row">
+          <span class="field-name">notify_email</span>
+          <span class="field-detail">Email on article approved/rejected <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">notify_breaking</span>
+          <span class="field-detail">Email on breaking news <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">newsletter</span>
+          <span class="field-detail">Subscribe to daily digest <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">dark_mode</span>
+          <span class="field-detail">Dashboard theme preference <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">language</span>
+          <span class="field-detail">Preferred interface language <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">timezone</span>
+          <span class="field-detail">For scheduled publish display <span class="field-tag tag-opt">optional</span></span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="ps-title">Security & Auth</div>
+        <div class="ps-desc">System-managed. Editable only through dedicated flows.</div>
+        <div class="field-row">
+          <span class="field-name">two_factor</span>
+          <span class="field-detail">2FA enabled flag (TOTP) <span class="field-tag tag-opt">optional</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">last_login_at</span>
+          <span class="field-detail">Timestamp of last login <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">last_login_ip</span>
+          <span class="field-detail">IP of last session <span class="field-tag tag-auto">auto</span> <span class="field-tag tag-private">private</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">remember_token</span>
+          <span class="field-detail">Laravel remember me token <span class="field-tag tag-auto">auto</span></span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="ps-title">Subscriber Fields</div>
+        <div class="ps-desc">Only for Reader role with active subscription.</div>
+        <div class="field-row">
+          <span class="field-name">plan</span>
+          <span class="field-detail">free / monthly / yearly <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">subscribed_at</span>
+          <span class="field-detail">Subscription start date <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">expires_at</span>
+          <span class="field-detail">Next billing or expiry date <span class="field-tag tag-auto">auto</span></span>
+        </div>
+        <div class="field-row">
+          <span class="field-name">saved_articles</span>
+          <span class="field-detail">Reading list (pivot table) <span class="field-tag tag-auto">auto</span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TAB: WORKFLOW ══ -->
+  <div id="tab-workflow" class="tab-content">
+    <div class="sep"><span class="sep-title">Editorial Workflow States</span><div class="sep-line"></div></div>
+    <div class="workflow">
+      <div class="wf-node wf-journalist">
+        <div class="wf-circle">📝</div>
+        <div class="wf-label">Draft</div>
+        <div class="wf-role">Journalist</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node wf-journalist">
+        <div class="wf-circle">📤</div>
+        <div class="wf-label">Submitted</div>
+        <div class="wf-role">Journalist</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node wf-editor">
+        <div class="wf-circle">👁️</div>
+        <div class="wf-label">In Review</div>
+        <div class="wf-role">Editor</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node wf-editor">
+        <div class="wf-circle">✅</div>
+        <div class="wf-label">Approved</div>
+        <div class="wf-role">Editor</div>
+      </div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-node wf-live">
+        <div class="wf-circle">🌐</div>
+        <div class="wf-label">Published</div>
+        <div class="wf-role">Live</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem; display:flex; gap:.8rem; flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted);">
+        <div style="width:10px;height:2px;background:var(--admin);"></div> Admin can skip to any state
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted);">
+        <div style="width:10px;height:2px;background:var(--editor);border-style:dashed;border-top:2px dashed var(--editor);"></div> Editor can send back to Draft with rejection note
+      </div>
+    </div>
+
+    <div class="sep" style="margin-top:2.5rem;"><span class="sep-title">Editable Profile Fields by Role</span><div class="sep-line"></div></div>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Profile Field</th>
+            <th class="th-admin">Admin</th>
+            <th class="th-editor">Editor</th>
+            <th class="th-journalist">Journalist</th>
+            <th class="th-moderator">Moderator</th>
+            <th class="th-reader">Reader</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>name / avatar<span class="cat">Core</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>email (re-verify)<span class="cat">Core</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>password<span class="cat">Core</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>bio / location / socials<span class="cat">Contact</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>beat / byline<span class="cat">Journalist</span></td><td class="check">✓</td><td class="partial">edit</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>notification prefs<span class="cat">Prefs</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>2FA toggle<span class="cat">Security</span></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>assign roles to others<span class="cat">Admin</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+          <tr><td>subscription plan<span class="cat">Billing</span></td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="partial">own</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ TAB: CODE ══ -->
+  <div id="tab-code" class="tab-content">
+    <div class="sep"><span class="sep-title">Laravel Implementation Code</span><div class="sep-line"></div></div>
+
+    <div class="code-block" style="margin-bottom:1.2rem;">
+      <div class="code-header">
+        <div class="code-dot" style="background:#ff6b6b"></div>
+        <div class="code-dot" style="background:#ffd93d"></div>
+        <div class="code-dot" style="background:#6bcb77"></div>
+        &nbsp; database/seeders/RoleSeeder.php
+      </div>
+      <div class="code-body"><pre><span class="kw">use</span> <span class="cl">Spatie\Permission\Models\Role</span>;
+<span class="kw">use</span> <span class="cl">Spatie\Permission\Models\Permission</span>;
+
+<span class="kw">class</span> <span class="cl">RoleSeeder</span> <span class="kw">extends</span> <span class="cl">Seeder</span> {
+  <span class="kw">public function</span> <span class="fn">run</span>(): <span class="kw">void</span> {
+
+    <span class="cm">// Create roles</span>
+    $roles = [<span class="str">'admin'</span>, <span class="str">'editor'</span>, <span class="str">'journalist'</span>, <span class="str">'moderator'</span>, <span class="str">'reader'</span>];
+    <span class="kw">foreach</span> ($roles <span class="kw">as</span> $role) {
+      <span class="cl">Role</span>::<span class="fn">firstOrCreate</span>([<span class="str">'name'</span> => $role]);
+    }
+
+    <span class="cm">// Create granular permissions</span>
+    $permissions = [
+      <span class="str">'create article'</span>, <span class="str">'edit own article'</span>, <span class="str">'edit any article'</span>,
+      <span class="str">'delete article'</span>, <span class="str">'publish article'</span>, <span class="str">'approve article'</span>,
+      <span class="str">'reject article'</span>, <span class="str">'toggle breaking news'</span>, <span class="str">'manage categories'</span>,
+      <span class="str">'upload media'</span>, <span class="str">'manage users'</span>, <span class="str">'assign roles'</span>,
+      <span class="str">'view analytics'</span>, <span class="str">'moderate comments'</span>, <span class="str">'manage homepage'</span>,
+    ];
+    <span class="kw">foreach</span> ($permissions <span class="kw">as</span> $perm) {
+      <span class="cl">Permission</span>::<span class="fn">firstOrCreate</span>([<span class="str">'name'</span> => $perm]);
+    }
+
+    <span class="cm">// Assign permissions to roles</span>
+    <span class="cl">Role</span>::<span class="fn">findByName</span>(<span class="str">'admin'</span>)-><span class="fn">givePermissionTo</span>(<span class="cl">Permission</span>::<span class="fn">all</span>());
+
+    <span class="cl">Role</span>::<span class="fn">findByName</span>(<span class="str">'editor'</span>)-><span class="fn">givePermissionTo</span>([
+      <span class="str">'create article'</span>, <span class="str">'edit any article'</span>, <span class="str">'publish article'</span>,
+      <span class="str">'approve article'</span>, <span class="str">'reject article'</span>, <span class="str">'toggle breaking news'</span>,
+      <span class="str">'manage categories'</span>, <span class="str">'upload media'</span>, <span class="str">'view analytics'</span>,
+      <span class="str">'moderate comments'</span>,
+    ]);
+
+    <span class="cl">Role</span>::<span class="fn">findByName</span>(<span class="str">'journalist'</span>)-><span class="fn">givePermissionTo</span>([
+      <span class="str">'create article'</span>, <span class="str">'edit own article'</span>, <span class="str">'upload media'</span>,
+    ]);
+
+    <span class="cl">Role</span>::<span class="fn">findByName</span>(<span class="str">'moderator'</span>)-><span class="fn">givePermissionTo</span>([
+      <span class="str">'moderate comments'</span>,
+    ]);
+  }
+}</pre></div>
+    </div>
+
+    <div class="code-block" style="margin-bottom:1.2rem;">
+      <div class="code-header">
+        <div class="code-dot" style="background:#ff6b6b"></div>
+        <div class="code-dot" style="background:#ffd93d"></div>
+        <div class="code-dot" style="background:#6bcb77"></div>
+        &nbsp; app/Policies/ArticlePolicy.php
+      </div>
+      <div class="code-body"><pre><span class="kw">class</span> <span class="cl">ArticlePolicy</span> {
+
+  <span class="kw">public function</span> <span class="fn">create</span>(<span class="cl">User</span> $user): <span class="kw">bool</span> {
+    <span class="kw">return</span> $user-><span class="fn">hasAnyRole</span>([<span class="str">'admin'</span>, <span class="str">'editor'</span>, <span class="str">'journalist'</span>]);
+  }
+
+  <span class="kw">public function</span> <span class="fn">update</span>(<span class="cl">User</span> $user, <span class="cl">Article</span> $article): <span class="kw">bool</span> {
+    <span class="kw">if</span> ($user-><span class="fn">hasRole</span>([<span class="str">'admin'</span>, <span class="str">'editor'</span>])) <span class="kw">return true</span>;
+    <span class="kw">return</span> $user->id === $article->user_id
+        && $article->status === <span class="str">'draft'</span>;
+  }
+
+  <span class="kw">public function</span> <span class="fn">publish</span>(<span class="cl">User</span> $user, <span class="cl">Article</span> $article): <span class="kw">bool</span> {
+    <span class="kw">return</span> $user-><span class="fn">hasPermissionTo</span>(<span class="str">'publish article'</span>);
+  }
+
+  <span class="kw">public function</span> <span class="fn">approve</span>(<span class="cl">User</span> $user, <span class="cl">Article</span> $article): <span class="kw">bool</span> {
+    <span class="kw">return</span> $user-><span class="fn">hasPermissionTo</span>(<span class="str">'approve article'</span>);
+  }
+}</pre></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dot" style="background:#ff6b6b"></div>
+        <div class="code-dot" style="background:#ffd93d"></div>
+        <div class="code-dot" style="background:#6bcb77"></div>
+        &nbsp; database/migrations/add_profile_fields_to_users_table.php
+      </div>
+      <div class="code-body"><pre>$table-><span class="fn">string</span>(<span class="str">'username'</span>)-><span class="fn">unique</span>()-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'avatar'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">text</span>(<span class="str">'bio'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'location'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'website'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'twitter_url'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'linkedin_url'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'phone'</span>)-><span class="fn">nullable</span>();
+
+<span class="cm">// Journalist only</span>
+$table-><span class="fn">string</span>(<span class="str">'beat'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'byline'</span>)-><span class="fn">nullable</span>();
+
+<span class="cm">// Preferences (JSON)</span>
+$table-><span class="fn">json</span>(<span class="str">'preferences'</span>)-><span class="fn">nullable</span>();
+<span class="cm">// stores: { notify_email, notify_breaking, newsletter, dark_mode, timezone }</span>
+
+<span class="cm">// Security</span>
+$table-><span class="fn">timestamp</span>(<span class="str">'last_login_at'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">string</span>(<span class="str">'last_login_ip'</span>)-><span class="fn">nullable</span>();
+$table-><span class="fn">boolean</span>(<span class="str">'two_factor_enabled'</span>)-><span class="fn">default</span>(<span class="kw">false</span>);
+
+<span class="cm">// Status</span>
+$table-><span class="fn">enum</span>(<span class="str">'status'</span>, [<span class="str">'active'</span>, <span class="str">'suspended'</span>, <span class="str">'banned'</span>])-><span class="fn">default</span>(<span class="str">'active'</span>);</pre></div>
+    </div>
+  </div>
+
+  <!-- ══ TAB: DB ══ -->
+  <div id="tab-db" class="tab-content">
+    <div class="sep"><span class="sep-title">Database Schema</span><div class="sep-line"></div></div>
+    <div class="schema-grid">
+
+      <div class="schema-table">
+        <div class="schema-title">users</div>
+        <div class="schema-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="col-pk">PK</span></div>
+        <div class="schema-row"><span class="col-name">name</span><span class="col-type">varchar(255)</span></div>
+        <div class="schema-row"><span class="col-name">email</span><span class="col-type">varchar(255)</span><span class="col-idx">UNIQUE</span></div>
+        <div class="schema-row"><span class="col-name">username</span><span class="col-type">varchar(100)</span><span class="col-idx">UNIQUE</span></div>
+        <div class="schema-row"><span class="col-name">password</span><span class="col-type">varchar(255)</span></div>
+        <div class="schema-row"><span class="col-name">avatar</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">bio</span><span class="col-type">text nullable</span></div>
+        <div class="schema-row"><span class="col-name">location</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">website</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">twitter_url</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">linkedin_url</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">beat</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">byline</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">preferences</span><span class="col-type">json nullable</span></div>
+        <div class="schema-row"><span class="col-name">status</span><span class="col-type">enum active/suspended/banned</span></div>
+        <div class="schema-row"><span class="col-name">two_factor_enabled</span><span class="col-type">boolean</span></div>
+        <div class="schema-row"><span class="col-name">last_login_at</span><span class="col-type">timestamp nullable</span></div>
+        <div class="schema-row"><span class="col-name">last_login_ip</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">email_verified_at</span><span class="col-type">timestamp nullable</span></div>
+        <div class="schema-row"><span class="col-name">remember_token</span><span class="col-type">varchar nullable</span></div>
+        <div class="schema-row"><span class="col-name">created_at / updated_at</span><span class="col-type">timestamps</span></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div class="schema-table">
+          <div class="schema-title">roles (Spatie)</div>
+          <div class="schema-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="col-pk">PK</span></div>
+          <div class="schema-row"><span class="col-name">name</span><span class="col-type">varchar — admin / editor / journalist / moderator / reader</span></div>
+          <div class="schema-row"><span class="col-name">guard_name</span><span class="col-type">varchar — web</span></div>
+        </div>
+
+        <div class="schema-table">
+          <div class="schema-title">model_has_roles (Spatie)</div>
+          <div class="schema-row"><span class="col-name">role_id</span><span class="col-type">bigint</span><span class="col-fk">FK → roles</span></div>
+          <div class="schema-row"><span class="col-name">model_type</span><span class="col-type">varchar — App\Models\User</span></div>
+          <div class="schema-row"><span class="col-name">model_id</span><span class="col-type">bigint</span><span class="col-fk">FK → users</span></div>
+        </div>
+
+        <div class="schema-table">
+          <div class="schema-title">subscriptions</div>
+          <div class="schema-row"><span class="col-name">id</span><span class="col-type">bigint</span><span class="col-pk">PK</span></div>
+          <div class="schema-row"><span class="col-name">user_id</span><span class="col-type">bigint</span><span class="col-fk">FK → users</span></div>
+          <div class="schema-row"><span class="col-name">plan</span><span class="col-type">enum free / monthly / yearly</span></div>
+          <div class="schema-row"><span class="col-name">subscribed_at</span><span class="col-type">timestamp</span></div>
+          <div class="schema-row"><span class="col-name">expires_at</span><span class="col-type">timestamp nullable</span></div>
+          <div class="schema-row"><span class="col-name">status</span><span class="col-type">enum active / cancelled / expired</span></div>
+        </div>
+
+        <div class="schema-table">
+          <div class="schema-title">user_saved_articles</div>
+          <div class="schema-row"><span class="col-name">user_id</span><span class="col-type">bigint</span><span class="col-fk">FK → users</span></div>
+          <div class="schema-row"><span class="col-name">article_id</span><span class="col-type">bigint</span><span class="col-fk">FK → articles</span></div>
+          <div class="schema-row"><span class="col-name">saved_at</span><span class="col-type">timestamp</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

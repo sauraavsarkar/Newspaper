@@ -47,8 +47,12 @@
                             @if($featuredArticle->author)
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
-                                        {{ substr($featuredArticle->author->name, 0, 1) }}
+                                        class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20 overflow-hidden">
+                                        @if($featuredArticle->author?->avatar)
+                                            <img src="{{ Storage::url($featuredArticle->author->avatar) }}" class="h-full w-full object-cover">
+                                        @else
+                                            {{ substr($featuredArticle->author->name, 0, 1) }}
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="text-sm font-bold text-zinc-800 dark:text-zinc-200">
@@ -114,8 +118,12 @@
                                     class="flex items-center justify-between mt-auto pt-4 border-t border-zinc-200 dark:border-white/5">
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs text-zinc-700 dark:text-white font-bold border border-zinc-300 dark:border-white/10">
-                                            {{ substr($article->author?->name ?? 'A', 0, 1) }}
+                                            class="w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs text-zinc-700 dark:text-white font-bold border border-zinc-300 dark:border-white/10 overflow-hidden">
+                                            @if($article->author?->avatar)
+                                                <img src="{{ Storage::url($article->author->avatar) }}" class="h-full w-full object-cover">
+                                            @else
+                                                {{ substr($article->author?->name ?? 'A', 0, 1) }}
+                                            @endif
                                         </div>
                                         <span
                                             class="text-xs font-medium text-zinc-400">{{ $article->author?->name ?? 'Unknown' }}</span>

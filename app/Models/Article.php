@@ -62,6 +62,15 @@ class Article extends Model
     }
 
     /**
+     * Get users who saved this article.
+     */
+    public function savedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_saved_articles')
+            ->withPivot('saved_at');
+    }
+
+    /**
      * Record a view for this article (throttled by IP - 1 per hour).
      */
     public function recordView(?int $userId = null, ?string $ip = null, ?string $userAgent = null, ?string $referer = null): bool
@@ -114,5 +123,15 @@ class Article extends Model
     public function getTotalViewsAttribute(): int
     {
         return $this->views()->count();
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($article) {
+            // Cleanup physical image file
+            if ($article->featured_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($article->featured_image);
+            }
+        });
     }
 }

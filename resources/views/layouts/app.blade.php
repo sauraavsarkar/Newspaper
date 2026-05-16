@@ -81,10 +81,12 @@
                         class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-zinc-300 dark:focus:border-zinc-700 transition">
                         <div
                             class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-0.5 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-shadow">
-                            <div
-                                class="h-full w-full rounded-full bg-white dark:bg-zinc-950 flex items-center justify-center">
-                                <span
-                                    class="text-xs font-bold text-indigo-600 dark:text-white">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
+                            <div class="h-full w-full rounded-full overflow-hidden bg-white dark:bg-zinc-950 flex items-center justify-center">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ Storage::url(auth()->user()->avatar) }}" class="h-full w-full object-cover">
+                                @else
+                                    <span class="text-xs font-bold text-indigo-600 dark:text-white">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
+                                @endif
                             </div>
                         </div>
                     </button>

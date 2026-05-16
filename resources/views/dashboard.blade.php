@@ -103,8 +103,12 @@
                 <div class="space-y-6">
                     @forelse($recentActivity as $article)
                     <div class="flex gap-4">
-                        <div class="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/30">
-                            <span class="text-sm font-bold text-indigo-400">{{ substr($article->author?->name ?? 'U', 0, 1) }}</span>
+                        <div class="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/30 overflow-hidden">
+                            @if($article->author?->avatar)
+                                <img src="{{ Storage::url($article->author->avatar) }}" class="h-full w-full object-cover">
+                            @else
+                                <span class="text-sm font-bold text-indigo-400">{{ substr($article->author?->name ?? 'U', 0, 1) }}</span>
+                            @endif
                         </div>
                         <div>
                             <p class="text-zinc-600 dark:text-zinc-300 text-sm"><span class="font-bold text-zinc-900 dark:text-white">{{ $article->author?->name ?? 'Unknown' }}</span>

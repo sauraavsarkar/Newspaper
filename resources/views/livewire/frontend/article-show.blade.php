@@ -19,8 +19,12 @@
 
         <div class="flex items-center justify-center gap-6 mt-8">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-500/20">
-                    {{ substr($article->author?->name ?? 'A', 0, 1) }}
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-500/20 overflow-hidden">
+                    @if($article->author?->avatar)
+                        <img src="{{ Storage::url($article->author->avatar) }}" class="h-full w-full object-cover">
+                    @else
+                        {{ substr($article->author?->name ?? 'A', 0, 1) }}
+                    @endif
                 </div>
                 <div class="text-left">
                     <p class="text-sm font-bold text-zinc-800 dark:text-zinc-200">{{ $article->author?->name ?? 'Unknown Author' }}</p>
@@ -66,8 +70,12 @@
 
     <!-- Author Bio -->
     <div class="mt-16 glass-card rounded-2xl p-8 border border-zinc-200 dark:border-white/5 flex flex-col md:flex-row gap-6 items-center md:items-start">
-        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0">
-            {{ substr($article->author?->name ?? 'A', 0, 1) }}
+        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0 overflow-hidden">
+            @if($article->author?->avatar)
+                <img src="{{ Storage::url($article->author->avatar) }}" class="h-full w-full object-cover">
+            @else
+                {{ substr($article->author?->name ?? 'A', 0, 1) }}
+            @endif
         </div>
         <div class="text-center md:text-left">
             <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Written by {{ $article->author?->name ?? 'Unknown Author' }}</h3>

@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /*
         Schema::table('articles', function (Blueprint $table) {
             $table->index(['status', 'published_at']);
             $table->index('is_featured');
@@ -25,6 +26,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->index('username');
         });
+        */
     }
 
     /**
