@@ -95,4 +95,20 @@ class User extends Authenticatable
         return $this->belongsToMany(Article::class, 'user_saved_articles')
             ->withPivot('saved_at');
     }
+
+    /**
+     * Get all comments by this user.
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get all reactions by this user.
+     */
+    public function reactions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Reaction::class);
+    }
 }

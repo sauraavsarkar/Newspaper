@@ -71,6 +71,22 @@ class Article extends Model
     }
 
     /**
+     * Get all reactions for this article.
+     */
+    public function reactions()
+    {
+        return $this->morphMany(Reaction::class, 'reactable');
+    }
+
+    /**
+     * Get all comments for this article.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
      * Record a view for this article (throttled by IP - 1 per hour).
      */
     public function recordView(?int $userId = null, ?string $ip = null, ?string $userAgent = null, ?string $referer = null): bool

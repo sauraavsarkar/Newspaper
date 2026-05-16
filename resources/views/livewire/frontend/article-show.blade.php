@@ -57,6 +57,9 @@
         {!! $article->content !!}
     </div>
 
+    <!-- Reactions -->
+    <livewire:frontend.article-reactions :article="$article" />
+
     <!-- Tags -->
     @if($article->tags && $article->tags->count() > 0)
     <div class="mt-16 pt-8 border-t border-zinc-200 dark:border-white/10 flex flex-wrap gap-2">
@@ -87,4 +90,7 @@
             </a>
         </div>
     </div>
+
+    <!-- Comment Section -->
+    <livewire:frontend.comment-section :article="$article" />
 </article>
