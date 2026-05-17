@@ -27,6 +27,9 @@
                 <p class="text-zinc-500 dark:text-zinc-400 mt-1 font-medium">
                     {{ $user->email }} • <span class="uppercase tracking-widest text-[10px] font-black {{ $user->status === 'active' ? 'text-emerald-500' : 'text-rose-500' }}">{{ $user->status }}</span>
                 </p>
+                @error('avatar')
+                    <p class="text-rose-500 text-xs font-bold mt-2 animate-pulse">{{ $message }}</p>
+                @enderror
             </div>
         </div>
         <div class="flex gap-3">

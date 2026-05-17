@@ -1,6 +1,6 @@
 # Today Morning News — Daily Editorial Engine
 
-![Today Morning News Dashboard](file:///C:/Users/HP/.gemini/antigravity/brain/e9cffec9-dbff-406b-a26a-ae15f7d20d17/chronicle_os_dashboard_mockup_1778884376453.png)
+![Today Morning News Dashboard](public/images/dashboard_mockup.svg)
 
 Today Morning News is a high-performance, enterprise-grade news content management system (CMS) built for modern journalism. Designed with a "Today Morning News" aesthetic, it provides an immersive, glassmorphism-inspired environment for journalists, editors, and administrators.
 

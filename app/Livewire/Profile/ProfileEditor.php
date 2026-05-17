@@ -5,43 +5,49 @@ namespace App\Livewire\Profile;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Password;
 
+#[Layout('layouts.app')]
 class ProfileEditor extends Component
 {
     use WithFileUploads;
 
     public User $user;
-    public $avatar;
-    public $name;
-    public $username;
-    public $email;
-    public $bio;
-    public $location;
-    public $website;
-    public $twitter_url;
-    public $linkedin_url;
-    public $phone;
-    public $beat;
-    public $byline;
-    public $status;
-    public $selectedRole;
-    public $two_factor_enabled;
+    public mixed $avatar = null;
+    public ?string $name = null;
+    public ?string $username = null;
+    public ?string $email = null;
+    public ?string $bio = null;
+    public ?string $location = null;
+    public ?string $website = null;
+    public ?string $twitter_url = null;
+    public ?string $linkedin_url = null;
+    public ?string $phone = null;
+    public ?string $beat = null;
+    public ?string $byline = null;
+    public ?string $status = null;
+    public ?string $selectedRole = null;
+    public ?bool $two_factor_enabled = null;
 
-    public $isAdminView = false;
+    public bool $isAdminView = false;
 
     public function mount(User $user = null)
     {
-        $this->user = $user ?? auth()->user();
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+
+        $this->user = $user ?? $currentUser;
         
         // Authorization
-        if (auth()->user()->id !== $this->user->id && !auth()->user()->hasRole('Admin')) {
+        if ($currentUser->id !== $this->user->id && !$currentUser->hasRole('Admin')) {
             abort(403);
         }
 
-        $this->isAdminView = auth()->user()->hasRole('Admin');
+        $this->isAdminView = $currentUser->hasRole('Admin');
 
         $this->name = $this->user->name;
         $this->username = $this->user->username;
@@ -147,6 +153,6 @@ class ProfileEditor extends Component
             'roles' => Role::all(),
             'articleCount' => $this->user->articles()->count(),
             'totalViews' => $this->user->articles()->withCount('views')->get()->sum('views_count'),
-        ])->layout('layouts.app');
+        ]);
     }
 }
