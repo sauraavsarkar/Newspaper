@@ -1,6 +1,6 @@
 # Today Morning News — Daily Editorial Engine
 
-![Today Morning News Dashboard](public/images/dashboard_mockup.svg)
+![Today Morning News Dashboard](public/images/dashboard.png)
 
 Today Morning News is a high-performance, enterprise-grade news content management system (CMS) built for modern journalism. Designed with a "Today Morning News" aesthetic, it provides an immersive, glassmorphism-inspired environment for journalists, editors, and administrators.
 
@@ -15,6 +15,25 @@ This platform is more than just a blog engine; it's a complete **Editorial Comma
 - **Dynamic Interactions**: Powered by Alpine.js for smooth, lag-free transitions.
 - **Dark Mode First**: A premium dark-centric experience with a global toggle.
 - **Responsive Canvas**: Tailored for both high-resolution newsrooms and mobile field reporting.
+
+---
+
+## 📸 Interface Showcase
+
+### 🖥️ Main Dashboard
+An immersive, glassmorphic layout highlighting breaking news, category feeds, and dynamic editorial cards.
+![Main Dashboard](public/images/dashboard.png)
+
+### 🌓 Morning Digest (Dark & Light Modes)
+A personalized landing area featuring an instant theme switcher for optimal day or night reading.
+<p align="center">
+  <img src="public/images/morning_digest_dark.png" alt="Morning Digest Dark Mode" width="49%">
+  <img src="public/images/morning_digest_light.png" alt="Morning Digest Light Mode" width="49%">
+</p>
+
+### 📖 Immersive Reading Canvas
+Clean, content-focused reading layouts with a full-width header image and floating interactive elements.
+![Article Detail Page](public/images/article_detail.png)
 
 ---
 
