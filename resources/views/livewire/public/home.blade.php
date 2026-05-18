@@ -167,20 +167,20 @@
                     <div class="space-y-8">
                         @foreach($trendingArticles as $index => $article)
                             <a href="{{ route('article.show', $article->slug) }}" class="group block">
-                                <div class="flex gap-4">
+                                <div class="flex gap-4 items-start">
                                     <span
-                                        class="text-4xl font-black text-zinc-200 dark:text-zinc-800 group-hover:text-indigo-500/20 transition-colors shrink-0 leading-none">
+                                        class="text-6xl font-black text-zinc-200/50 dark:text-zinc-800/50 group-hover:text-indigo-500/80 dark:group-hover:text-indigo-400/80 transition-all duration-300 transform group-hover:scale-110 shrink-0 leading-none select-none">
                                         0{{ $index + 1 }}
                                     </span>
-                                    <div class="flex-1">
+                                    <div class="flex-1 min-w-0">
                                         <h4
-                                            class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-400 transition-colors leading-snug line-clamp-2 mb-2">
+                                            class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors leading-snug line-clamp-2 mb-2">
                                             {{ $article->title }}
                                         </h4>
                                         <div class="flex items-center gap-2">
                                             <span
                                                 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ $article->category?->name ?? 'News' }}</span>
-                                            <span class="w-1 h-1 rounded-full bg-zinc-700"></span>
+                                            <span class="w-1.5 h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800"></span>
                                             <span
                                                 class="text-[10px] text-zinc-500">{{ $article->published_at?->format('M d') ?? 'Today' }}</span>
                                         </div>

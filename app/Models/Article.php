@@ -149,4 +149,18 @@ class Article extends Model
             ->orderByDesc('trending_score')
             ->limit($limit);
     }
+
+    /**
+     * Scope a query to only include trending articles within the last 6 hours.
+     */
+    public function scopeTrendingSixHours(Builder $query, int $limit = 5): Builder
+    {
+        return $query->where('status', 'published')
+            ->withCount(['views as trending_score' => function ($q) {
+                $q->where('viewed_at', '>=', now()->subHours(6));
+            }])
+            ->orderByDesc('trending_score')
+            ->limit($limit);
+    }
 }
+

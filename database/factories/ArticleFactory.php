@@ -23,7 +23,7 @@ class ArticleFactory extends Factory
         $title = $this->faker->sentence(8);
         return [
             'user_id' => User::factory(),
-            'category_id' => Category::all()->random()->id ?? Category::factory(),
+            'category_id' => Category::factory(),
             'title' => $title,
             'slug' => Str::slug($title),
             'content' => $this->faker->paragraphs(10, true),

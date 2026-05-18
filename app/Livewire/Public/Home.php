@@ -31,9 +31,9 @@ class Home extends Component
             ->limit(5)
             ->get();
 
-        // Fetch trending articles (most viewed in last 7 days)
+        // Fetch trending articles (most viewed in last 6 hours)
         $trendingArticles = Article::with('category')
-            ->trending(7, 5)
+            ->trendingSixHours(5)
             ->get();
 
         // Fetch latest articles based on search
